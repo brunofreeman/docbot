@@ -15,6 +15,11 @@
 - `module unload <module name>`: unloads the specified module
 - `module list`: lists the user's loaded modules
 
+## Python Virtual Environment
+- `source /groups/CS156b/2022/venvs/docbotvenv/bin/activate`: activate the `docbot` virtual environment
+- `pip install -r requirements.txt` (from `home/username/docbot/`): ensure all virtual environment requirements are satisfied
+  - To get a new package, add a line to `requirements.txt` (syntax `package~=1.2.3`) and run the above command again to install.
+
 ## Slurm
 ### Slurm Commands
 - `sbatch`: submit files to Slurm for running
@@ -80,9 +85,9 @@ module load <module 1>
 module load <module n>
 
 # setup a Python environment and run a script (for example)
-source /home/username/venvs/cs156b/bin/activate OR /groups/CS156
-cd /home/username/cs156b
-python my_script.my
+source /groups/CS156b/2022/venvs/docbotvenv/bin/activate
+cd /home/username/docbot
+python3 docbot_train.py
 ```
 
 ## Interactive Sessions
