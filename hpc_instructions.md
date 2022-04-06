@@ -5,7 +5,7 @@
 - Need Access password and 2FA
 
 ## Storage
-- Each user home directroy is allotted 50 GB
+- Each user home directory is allotted 50 GB
 - `/groups/CS156b/` is allotted 300 TD to be shared among the class
 	- Need to email `cwang7@caltech.edu` to be granted access permissions (include Access username)
 
