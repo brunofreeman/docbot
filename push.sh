@@ -13,7 +13,9 @@ fi
 read -r -p "You are about to OVERWRITE your HPC docbot with your local version. Continue? (y/n) " yn
 
 case $yn in
-	[yY] ) scp -r . "$1"@login.hpc.caltech.edu:/home/"$1"/docbot;;
+	[yY] )
+	  echo "rsync -r --exclude=.git . ""$1""@login.hpc.caltech.edu:/home/""$1""/docbot"
+	  rsync -r --exclude=.git . "$1"@login.hpc.caltech.edu:/home/"$1"/docbot;;
 	[nN] ) echo "Overwrite aborted.";;
 	* ) echo "Invalid response. Overwrite aborted.";;
 esac
