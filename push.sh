@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ "${HOSTNAME}" = "login1.cm.cluster" ]; then
+  echo "usage: $0 must be run locally, not on ${HOSTNAME}"
+  exit 1
+fi
+
 if [ "${PWD##*/}" != "docbot" ]; then
   echo "usage: $0 must be run in docbot/, not ${PWD##*/}/"
   exit 1
@@ -14,8 +19,8 @@ read -r -p "You are about to OVERWRITE your HPC docbot with your local version. 
 
 case $yn in
 	[yY] )
-	  echo "rsync -r --exclude=.git . ""$1""@login.hpc.caltech.edu:/home/""$1""/docbot"
-	  rsync -r --exclude=.git . "$1"@login.hpc.caltech.edu:/home/"$1"/docbot;;
+	  echo "rsync -r --exclude=.git . ${1}@login.hpc.caltech.edu:/home/${1}/docbot"
+	  rsync -r --exclude=.git . "${1}"@login.hpc.caltech.edu:/home/"${1}"/docbot;;
 	[nN] ) echo "Overwrite aborted.";;
 	* ) echo "Invalid response. Overwrite aborted.";;
 esac
