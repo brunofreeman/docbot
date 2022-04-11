@@ -17,6 +17,7 @@
 
 ## Python Virtual Environment
 - `source /groups/CS156b/2022/venvs/docbotvenv/bin/activate`: activate the `docbot` virtual environment
+- `deactivate`: deactivate the `docbot` virtual environment
 - `pip install -r requirements.txt` (from `home/username/docbot/`): ensure all virtual environment requirements are satisfied
   - To get a new package, add a line to `requirements.txt` (syntax `package~=1.2.3`) and run the above command again to install.
 
@@ -88,6 +89,7 @@ module load <module n>
 source /groups/CS156b/2022/venvs/docbotvenv/bin/activate
 cd /home/username/docbot
 python3 docbot_train.py
+deactivate
 ```
 
 ## Interactive Sessions

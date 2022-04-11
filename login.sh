@@ -10,5 +10,5 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-echo "ssh ""$1""@login.hpc.caltech.edu"
-ssh "$1""@login.hpc.caltech.edu"
+echo "ssh ${1}@login.hpc.caltech.edu"
+ssh "${1}@login.hpc.caltech.edu"
