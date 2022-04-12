@@ -1,5 +1,3 @@
-from importlib.abc import PathEntryFinder
-from os import path
 import sys
 from typing import Dict, List, Tuple
 import pandas as pd
@@ -38,7 +36,7 @@ def main(argv: List[str]) -> None:
         # .mean() ignores NaN entries
         avg[pathology] = df_labels[pathology].mean()
     
-    df_predict: pd.DataFrame = pd.read_csv(TEST_ID_CSV_FILE_PATH).drop("Path", axis=1)
+    df_predict: pd.DataFrame = pd.read_csv(TEST_ID_CSV_FILE_PATH).drop("Path", axis=1).rename(columns={"Id": "ID"})
     for pathology in PATHOLOGIES:
         df_predict[pathology] = df_predict.apply(lambda _ : avg[pathology], axis=1)
     
