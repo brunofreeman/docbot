@@ -23,7 +23,7 @@
 
 ## Slurm
 ### Slurm Commands
-- `sbatch`: submit files to Slurm for running
+- `sbatch <my_job.sbatch>`: submit `my_job.sbatch` (see below for format) to Slurm for running
 - `squeue [-u uname]`: look at what is currently queued on the HPC (optionally filtered by username)
 	- `JOBID`: unique  of job, used for killing the job
 	- `NAME`: string name provided to Slurm in file descriptor
@@ -38,28 +38,29 @@
 
 ### `.sbatch` Files
 `.sbatch` files are used to submit jobs to Slurm.
-```sbatch
+```bash
 #!/bin/bash
 
 # comments start with a pound followed by a space
+# lines beginning with #SBATCH specified job parameters
 
 #SBATCH --job-name=descriptive_job_name
 
 # direct standard out and standard error of the job
-# %j generates JOBID, Slurm docs have other % generators
-#SBATCH --output=/home/username/%j.out
-#SBATCH --output=/home/username/%j.err
+# %x: job name, %j: job ID, %u: username
+#SBATCH --output=/home/%u/docbot/out/%x_%j_%u.out
+#SBATCH --output=/home/%u/docbot/out/%x_%j_%u.err
 
 # tells Slurm to bill CS 156b for the job
 #SBATCH -A CS156b
 
 # estimated time to run the job (Slurm will kill the job if this limit is exceeded)
 # tip: start off by overestimating and adjust as you get a better sense
-# too high: will take a long time to get scheduled; too low: will get killed off before completion
+#     too high: will take a long time to get scheduled
+#     too low: will get killed off before completion
 #SBATCH -t 1:30:00
 
-# number of concurrent srun taks
-# likely will not need to modify
+# number of concurrent srun taks (likely will not need to modify)
 #SBATCH --ntasks=1
 
 # number of CPU threads for each task
@@ -79,6 +80,7 @@
 #SBATCH --mail-type=FAIL
 
 # rest of file is standard bash
+UNAME=uname
 
 # load modules needed
 module load <module 1>
@@ -86,9 +88,10 @@ module load <module 1>
 module load <module n>
 
 # setup a Python environment and run a script (for example)
+cd /home/"${UNAME}"/docbot
+mkdir out
 source /groups/CS156b/2022/venvs/docbotvenv/bin/activate
-cd /home/username/docbot
-python3 docbot_train.py
+python3 src/docbot_train.py
 deactivate
 ```
 

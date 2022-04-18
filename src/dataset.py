@@ -1,7 +1,6 @@
 import os
 os.environ['OPENBLAS_NUM_THREADS'] = '8'
 import sys
-from turtle import up
 from typing import Dict, FrozenSet, List, Set, Tuple
 import pandas as pd
 from tabulate import tabulate
