@@ -6,7 +6,7 @@
 #SBATCH --output=/home/%u/docbot/out/%x_%j_%u.err
 
 #SBATCH -A CS156b
-#SBATCH -t 2:00:00
+#SBATCH -t 10:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G

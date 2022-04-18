@@ -3,7 +3,6 @@ import os
 from typing import List, Tuple
 import numpy as np
 import cv2
-from progress_bar import print_progress_bar, print_progress_bar_complete
 
 
 COLOR_MODE: int = cv2.IMREAD_GRAYSCALE
@@ -32,7 +31,11 @@ def try_mkdir_dst(src_path: str) -> None:
 
 
 def main(argv: List[str]) -> None:
-    i: int = 0
+    if os.path.exists(IMG_DST_PATH):
+        print(f"{DST_DIR} has already been generated!")
+        print(f"If you are regenerating, delete the directory first with 'rm -rf {DST_DIR}' while in {IMG_DST_PATH[:IMG_DST_PATH.rindex('/')]}.")
+        print(f"Be warned that regenerating requires many hours and a Slurm job, so don't do so unless necessary.")
+        sys.exit(1)
 
     for split_dir in TARGET_DIRS:
         path: str = f"{IMG_SRC_PATH}/{split_dir}"
@@ -45,9 +48,6 @@ def main(argv: List[str]) -> None:
                 try_mkdir_dst(path)
 
                 for img_name in os.listdir(path):
-                    print_progress_bar(i, N_IMAGES)
-                    i += 1
-
                     path = path_push(path, img_name)
 
                     img: np.ndarray = cv2.imread(path, COLOR_MODE)
@@ -57,8 +57,6 @@ def main(argv: List[str]) -> None:
                     path = path_pop(path)
                 path = path_pop(path)
             path = path_pop(path)
-
-    print_progress_bar_complete()
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@
 		- `(Resource)`: not running because not enough resrouces are available
 		- `TIME`: real-time job running length (`D-HH:M:SS` format)
 		- `hpc-[node info],...`: job is currently running on the listed nodes
-- `scanel <id>`: cancel job with `JOBID=id` that you submitted
+- `scancel <id>`: cancel job with `JOBID=id` that you submitted
 - `scontrol`: change parameters of jobs that have already been submitted
 
 ### `.sbatch` Files
