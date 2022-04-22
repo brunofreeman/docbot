@@ -3,7 +3,6 @@
 #SBATCH --job-name=docbot_downscale
 
 #SBATCH --output=/home/%u/docbot/out/%x_%j_%u.out
-#SBATCH --output=/home/%u/docbot/out/%x_%j_%u.err
 
 #SBATCH -A CS156b
 #SBATCH -t 10:00:00

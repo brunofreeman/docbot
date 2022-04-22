@@ -3,7 +3,6 @@
 #SBATCH --job-name=docbot_cnn
 
 #SBATCH --output=/home/%u/docbot/out/%x_%j_%u.out
-#SBATCH --output=/home/%u/docbot/out/%x_%j_%u.err
 
 #SBATCH -A CS156b
 #SBATCH -t 12:00:00

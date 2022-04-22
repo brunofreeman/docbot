@@ -49,7 +49,6 @@
 # direct standard out and standard error of the job
 # %x: job name, %j: job ID, %u: username
 #SBATCH --output=/home/%u/docbot/out/%x_%j_%u.out
-#SBATCH --output=/home/%u/docbot/out/%x_%j_%u.err
 
 # tells Slurm to bill CS 156b for the job
 #SBATCH -A CS156b

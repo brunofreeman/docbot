@@ -84,11 +84,14 @@ class CheXpertTrainingDataset(Dataset):
             # for the extremely small amount of cases where only lateral
             # shots are available, just use that image
             img_path += VIEW_BACKUP
-            assert(os.path.exists(img_path))
 
-        # convert the image into a PyTorch tensor and normalize [0, 255] -> [0, 1]
-        img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
-        img /= MAX_PIXEL_INTENSITY
+        if not os.path.exists(img_path):
+            print(f"Dataset failed: could not find {img_path} for data point {idx}. Using all zeroes as fallback.")
+            img: np.ndarray = np.zeros(shape=(1, *RESOLUTION))
+        else:
+            # convert the image into a PyTorch tensor and normalize [0, 255] -> [0, 1]
+            img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
+            img /= MAX_PIXEL_INTENSITY
         img_tensor: torch.Tensor = torch.from_numpy(img)
 
         # grab the indicator vector from the label data frame
