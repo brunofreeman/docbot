@@ -7,9 +7,8 @@ from tabulate import tabulate
 
 
 TRAIN_LABEL_CSV_FILEPATH: str = "/groups/CS156b/data/student_labels/train.csv"
-TEST_ID_CSV_FILE_PATH: str    = "/groups/CS156b/data/student_labels/test_ids.csv"
 
-PATHOLOGIES: Tuple[str] = (
+PATHOLOGIES: List[str] = [
     "No Finding",
     "Enlarged Cardiomediastinum",
     "Cardiomegaly",
@@ -24,7 +23,7 @@ PATHOLOGIES: Tuple[str] = (
     "Pleural Other",
     "Fracture",
     "Support Devices"
-)
+]
 
 
 def main(argv: List[str]) -> None:
