@@ -55,7 +55,7 @@ training_loss_history = np.zeros([n_epochs, 1])
 validation_accuracy_history = np.zeros([n_epochs, 1])
 validation_loss_history = np.zeros([n_epochs, 1])
 
-for epoch in range(n_epochs):
+for epoch in range(1):
     print(f'Epoch {epoch+1}/10:')
     train_total = 0
     train_correct = 0
@@ -63,14 +63,12 @@ for epoch in range(n_epochs):
     model.train()
     for i, data in enumerate(training_data_loader):
         images, labels = data
-       
+
         images = images.to(torch.float32)
-        
         images /= 255
         optimizer.zero_grad()
         # forward pass
         output = model(images)
-
         # calculate categorical cross entropy loss
         loss = criterion(output, labels)
         # backward pass
@@ -87,13 +85,13 @@ for epoch in range(n_epochs):
         # training_loss_history[epoch] += loss.item()
         # # progress update after 180 batches (~1/10 epoch for batch size 32)
         # if i % 180 == 0: print('.',end='')
-    training_loss_history[epoch] /= len(training_data_loader)
-    training_accuracy_history[epoch] = train_correct / train_total
-    print(f'\n\tloss: {training_loss_history[epoch,0]:0.4f}, acc: {training_accuracy_history[epoch,0]:0.4f}',end='')
+    # training_loss_history[epoch] /= len(training_data_loader)
+    # training_accuracy_history[epoch] = train_correct / train_total
+    # print(f'\n\tloss: {training_loss_history[epoch,0]:0.4f}, acc: {training_accuracy_history[epoch,0]:0.4f}',end='')
         
-    # validate
-    test_total = 0
-    test_correct = 0
+    # # validate
+    # test_total = 0
+    # test_correct = 0
     # with torch.no_grad():
     #     model.eval()
     #     for i, data in enumerate(test_data_loader):
@@ -110,3 +108,6 @@ for epoch in range(n_epochs):
     #     validation_loss_history[epoch] /= len(test_data_loader)
     #     validation_accuracy_history[epoch] = test_correct / test_total
     # print(f', val loss: {validation_loss_history[epoch,0]:0.4f}, val acc: {validation_accuracy_history[epoch,0]:0.4f}')
+
+
+torch.save(model.state_dict(), "./model_v1")
