@@ -34,7 +34,9 @@ model = nn.Sequential(
 
 # For a multi-class classification problem
 # TODO: This wont work when multiple classes can be ture
-criterion = nn.CrossEntropyLoss()
+# criterion = nn.CrossEntropyLoss()
+criterion = nn.BCEWithLogitsLoss()
+
 optimizer = optim.RMSprop(model.parameters())
 
 n_epochs = 10
