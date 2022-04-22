@@ -7,6 +7,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
 
+
 """
 The train/ directory contains subdirectores of the form pid{:05d}
 for integers [1, 51632]. If we take one image from each patient
@@ -15,6 +16,8 @@ for integers [1, 51632]. If we take one image from each patient
 N_TRAIN: int = 51632
 
 NAN_VALUE: float = 0.0
+
+MAX_PIXEL_INTENSITY: int = 255
 
 COLOR_MODE: int = cv2.IMREAD_GRAYSCALE
 RESOLUTION: Tuple[int, int] = (256, 256)
@@ -51,12 +54,14 @@ PATHOLOGIES: List[str] = [
     "Support Devices"
 ]
 
+
 class CheXpertTrainingDataset(Dataset):
     len: int
     labels: pd.DataFrame
 
-    def __init__(self):
+    def __init__(self, device: torch.device = torch.device("cpu")):
         self.len = N_TRAIN
+        self.device = device
         self.labels = pd.read_csv(LABEL_CSV_PATH).fillna(NAN_VALUE)
 
         # trim off unused data to reduce data frame size
@@ -81,8 +86,9 @@ class CheXpertTrainingDataset(Dataset):
             img_path += VIEW_BACKUP
             assert(os.path.exists(img_path))
 
-        # convert the image into a PyTorch tensor
-        img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)])
+        # convert the image into a PyTorch tensor and normalize [0, 255] -> [0, 1]
+        img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
+        img /= MAX_PIXEL_INTENSITY
         img_tensor: torch.Tensor = torch.from_numpy(img)
 
         # grab the indicator vector from the label data frame
@@ -92,7 +98,7 @@ class CheXpertTrainingDataset(Dataset):
         indicator: np.ndarray = torch.FloatTensor([row[p] for p in PATHOLOGIES])
 
         # return the data point as an (X, Y) pair
-        return img_tensor, indicator
+        return img_tensor.to(self.device), indicator.to(self.device)
 
     @staticmethod
     def idx_to_dir(idx: int) -> str:

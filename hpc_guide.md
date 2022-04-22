@@ -6,8 +6,8 @@
 
 ## Storage
 - Each user home directory is allotted 50 GB
-- `/groups/CS156b/` is allotted 300 TD to be shared among the class
-	- Need to email `cwang7@caltech.edu` to be granted access permissions (include Access username)
+- `/groups/CS156b/` is allotted 300 TB to be shared among the class
+	- Need to email `cwang7@caltech.edu` to be granted access permissions (include Access username in email)
 
 ## Module System
 - `module avail [search term]`: prints availble modules on the HPC (optionally filtered by `search term`)

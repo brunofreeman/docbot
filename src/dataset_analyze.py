@@ -92,7 +92,5 @@ def main(argv: List[str]) -> None:
     print(f"outlier files not analyzed: {outlier_files}")
 
 
-
-
 if __name__ == "__main__":
     main(sys.argv)

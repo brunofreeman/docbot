@@ -4,3 +4,4 @@ tabulate~=0.8.9
 opencv_python~=4.5.5
 torch~=1.1
 torchvision~=0.12
+torchsummary~=1.5.1
