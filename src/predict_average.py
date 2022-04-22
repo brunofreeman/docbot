@@ -1,12 +1,12 @@
 import sys
-from typing import Dict, List, Tuple
+from typing import Dict, List
 import pandas as pd
 
 
 TRAIN_LABEL_CSV_FILEPATH: str = "/groups/CS156b/data/student_labels/train.csv"
 TEST_ID_CSV_FILE_PATH: str    = "/groups/CS156b/data/student_labels/test_ids.csv"
 
-PATHOLOGIES: Tuple[str] = (
+PATHOLOGIES: List[str] = (
     "No Finding",
     "Enlarged Cardiomediastinum",
     "Cardiomegaly",

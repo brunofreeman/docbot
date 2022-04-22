@@ -87,7 +87,7 @@ class CheXpertTrainingDataset(Dataset):
 
         if not os.path.exists(img_path):
             print(f"Dataset failed: could not find {img_path} for data point {idx}. Using all zeroes as fallback.")
-            img: np.ndarray = np.zeros(shape=(1, *RESOLUTION))
+            img: np.ndarray = np.zeros(shape=(1, *RESOLUTION), dtype=np.float32)
         else:
             # convert the image into a PyTorch tensor and normalize [0, 255] -> [0, 1]
             img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
@@ -98,7 +98,7 @@ class CheXpertTrainingDataset(Dataset):
         row: pd.Series = self.labels[
             self.labels["Path"].str.contains(img_path[img_path.index(STUDY_DIR)])
         ].iloc[0]
-        indicator: np.ndarray = torch.FloatTensor([row[p] for p in PATHOLOGIES])
+        indicator: torch.Tensor = torch.FloatTensor([row[p] for p in PATHOLOGIES])
 
         # return the data point as an (X, Y) pair
         return img_tensor.to(self.device), indicator.to(self.device)

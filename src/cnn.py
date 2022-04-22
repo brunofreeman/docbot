@@ -64,6 +64,8 @@ def main(argv: List[str]) -> None:
 
         model.train()
         for batch_idx, (images, labels) in enumerate(data_loader):
+            print(type(images))
+            print(images)
             # erase acculmulated gradients
             optimizer.zero_grad()
 

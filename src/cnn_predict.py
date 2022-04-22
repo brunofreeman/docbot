@@ -1,23 +1,17 @@
 import sys
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from torchsummary import summary
-from dataset_simple import CheXpertTrainingDataset
-import os
 import cv2
 import pandas as pd
 
-MODEL_PATH = "./model.pt"
-N_PREDICT: int = 6454 # verified correct number of images to predict
+MODEL_PATH: str = "./out/cnn_v1_005.pt"
+PREDICITON_CSV_PATH: str = "./out/cnn_v1.csv"
 
-NAN_VALUE: float = 0.0
+OUT_DIM: int = 14
 
 MAX_PIXEL_INTENSITY: int = 255
-
 COLOR_MODE: int = cv2.IMREAD_GRAYSCALE
 RESOLUTION: Tuple[int, int] = (256, 256)
 INTERPOLATION: int = cv2.INTER_CUBIC
@@ -27,14 +21,10 @@ DATASET_NAME: str = (
     f"{RESOLUTION[0]}x{RESOLUTION[1]}"
 )
 
-IMG_SRC_DIR: str = f"/groups/CS156b/2022/team_dirs/docbot/{DATASET_NAME}/solution"
-# LABEL_CSV_PATH: str = f"/groups/CS156b/data/student_labels/train.csv"
-# LABEL_DROP_COLUMNS: List[str] = ["Sex", "Age", "Frontal/Lateral", "AP/PA"]
+DATASET_PATH: str = f"/groups/CS156b/2022/team_dirs/docbot/{DATASET_NAME}"
+TEST_ID_PATH: str = "/groups/CS156b/data/student_labels/test_ids.csv"
 
-PID_PREFIX: str = "pid"
-STUDY_DIR: str = "/study1"
-VIEW_PRIMARY: str = "/view1_frontal.jpg"
-VIEW_BACKUP: str = "/view1_lateral.jpg"
+ID_COL: str = "Id"
 
 PATHOLOGIES: List[str] = [
     "No Finding",
@@ -53,68 +43,61 @@ PATHOLOGIES: List[str] = [
     "Support Devices"
 ]
 
-class CheXpertSolutionDataset(Dataset):
-    len: int
-    # labels: pd.DataFrame
-
-    def __init__(self, device: torch.device = torch.device("cpu")):
-        self.len = N_PREDICT
-        self.device = device
-        # self.labels = pd.read_csv(LABEL_CSV_PATH).fillna(NAN_VALUE)
-
-        # # trim off unused data to reduce data frame size
-        # self.labels.drop(LABEL_DROP_COLUMNS, axis=1, inplace=True)
-        # self.labels.drop(self.labels[self.labels["Path"].str.contains(STUDY_DIR) & (
-        #     self.labels["Path"].str.contains(VIEW_PRIMARY) |
-        #     self.labels["Path"].str.contains(VIEW_BACKUP)
-        # )].index, inplace=True)
-
-    def __len__(self):
-        return self.len
-
-    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
-        # get the path to the image
-        img_path: str = IMG_SRC_DIR + CheXpertTrainingDataset.idx_to_dir(idx)
-        if os.path.exists(img_path + VIEW_PRIMARY):
-            # use the frontal shot if it exists
-            img_path += VIEW_PRIMARY
-        else:
-            # for the extremely small amount of cases where only lateral
-            # shots are available, just use that image
-            img_path += VIEW_BACKUP
-
-        if not os.path.exists(img_path):
-            print(f"Dataset failed: could not find {img_path} for data point {idx}. Using all zeroes as fallback.")
-            img: np.ndarray = np.zeros(shape=(1, *RESOLUTION))
-        else:
-            # convert the image into a PyTorch tensor and normalize [0, 255] -> [0, 1]
-            img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
-            img /= MAX_PIXEL_INTENSITY
-        img_tensor: torch.Tensor = torch.from_numpy(img)
-
-        # # grab the indicator vector from the label data frame
-        # row: pd.Series = self.labels[
-        #     self.labels["Path"].str.contains(img_path[img_path.index(STUDY_DIR)])
-        # ].iloc[0]
-        # indicator: np.ndarray = torch.FloatTensor([row[p] for p in PATHOLOGIES])
-
-        # Normally would return (X,Y) pair but we only have X 
-        return img_tensor.to(self.device)
-
-    @staticmethod
-    def idx_to_dir(idx: int) -> str:
-        return f"/{PID_PREFIX}{(idx + 1):05d}{STUDY_DIR}"
-
 
 def main(argv: List[str]) -> None:
-    dataset = CheXpertSolutionDataset()
-    print(len(dataset))
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"device: {device}")
     
-    model = torch.load(MODEL_PATH)
+    # load pre-trained model
+    model = nn.Sequential(
+        nn.Conv2d(1, 8, kernel_size=(3,3)),
+        nn.BatchNorm2d(8),
+        nn.ReLU(),
+        nn.MaxPool2d(2),
+        nn.Dropout(p=0.1),
+        
+        nn.Conv2d(8, 16, kernel_size=(3,3)),
+        nn.BatchNorm2d(16),
+        nn.ReLU(),
 
-    output = []
+        nn.Conv2d(16, 32, kernel_size=(3,3)),
+        nn.BatchNorm2d(32),
+        nn.ReLU(),
+        nn.Dropout(p=0.1),
+        
+        nn.Flatten(),
+        nn.Linear(484128, 64),
+        nn.ReLU(),
+        nn.Linear(64, OUT_DIM)
+    ).to(device)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+    model.eval()
 
-    #TODO: get code from fill average and change the lambda function to use model.output()
+    # use model to populate predictions for a given row
+    def predict(id: str, path: str) -> pd.Series:
+        img_path: str = f"{DATASET_PATH}/{path}"
+        img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
+        img /= MAX_PIXEL_INTENSITY
+        img_tensor: torch.Tensor = torch.from_numpy(img).to(device)
+
+        prediction = model(img_tensor[None,])[0].tolist()
+        prediction.insert(0, id)
+        return prediction
+        
+    
+    # get a data frame with (Id, Path) pairs
+    to_predict: pd.DataFrame = pd.read_csv(TEST_ID_PATH)
+
+    # empty prediciton data frame
+    predictions: pd.DataFrame = pd.DataFrame(columns=[ID_COL, *PATHOLOGIES])
+
+    # append a row with a prediction for each (Id, Path) test pair
+    for i, row in to_predict.iterrows():
+        predictions.loc[i] = predict(str(row[ID_COL]), row["Path"])
+
+    # write to CSV
+    predictions.to_csv(PREDICITON_CSV_PATH, index=False)
+
 
 if __name__ == "__main__":
     main(sys.argv)
