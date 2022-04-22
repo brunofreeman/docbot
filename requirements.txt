@@ -2,4 +2,5 @@ numpy~=1.22.0
 pandas~=1.4.2
 tabulate~=0.8.9
 opencv_python~=4.5.5
-torch~=1.11
+torch~=1.1
+torchvision~=0.12

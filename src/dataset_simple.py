@@ -82,7 +82,7 @@ class CheXpertTrainingDataset(Dataset):
             assert(os.path.exists(img_path))
 
         # convert the image into a PyTorch tensor
-        img: np.ndarray = cv2.imread(img_path, COLOR_MODE)
+        img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)])
         img_tensor: torch.Tensor = torch.from_numpy(img)
 
         # grab the indicator vector from the label data frame
