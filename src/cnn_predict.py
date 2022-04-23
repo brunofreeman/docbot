@@ -6,7 +6,7 @@ import torch.nn as nn
 import cv2
 import pandas as pd
 
-MODEL_PATH: str = "./out/cnn_v1_005.pt"
+MODEL_PATH: str = "./out/cnn_v1_007.pt"
 PREDICITON_CSV_PATH: str = "./out/cnn_v1.csv"
 
 OUT_DIM: int = 14
@@ -80,7 +80,13 @@ def main(argv: List[str]) -> None:
         img /= MAX_PIXEL_INTENSITY
         img_tensor: torch.Tensor = torch.from_numpy(img).to(device)
 
-        prediction = model(img_tensor[None,])[0].tolist()
+        prediction = model(img_tensor[None,])[0].detach().numpy()
+
+        # normalize so all value are in [-1, 1]
+        prediction -= np.min(prediction)
+        prediction = prediction / (np.max(prediction) / 2) - 1
+
+        prediction = prediction.tolist()
         prediction.insert(0, id)
         return prediction
         
