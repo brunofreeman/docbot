@@ -7,8 +7,8 @@ import torch.nn as nn
 import cv2
 import pandas as pd
 
-MODEL_PATH: str = "./out/./out/chexnet_v1_007.pt"
-PREDICITON_CSV_PATH: str = "./out/chexnet_v1_007.csv"
+MODEL_PATH: str = "./out/chexnet_v1_012.pt"
+PREDICITON_CSV_PATH: str = "./out/chexnet_v1_012.csv"
 
 OUT_DIM: int = 14
 
