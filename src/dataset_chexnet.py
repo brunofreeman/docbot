@@ -88,7 +88,6 @@ class CheXpertTrainingDataset(Dataset):
             print(f"Dataset failed: could not find {img_path} for data point {idx}. Using all zeroes as fallback.")
             img: np.ndarray = np.zeros(shape=(3, *RESOLUTION), dtype=np.float32)
             img_tensor: torch.Tensor = torch.from_numpy(img)
-            img_tensor = img_tensor.permute(2, 1, 0) # put the channels dimension first
         else:
             # convert the image into a PyTorch tensor and normalize [0, 255] -> [0, 1]
             img: np.ndarray = np.array(cv2.imread(img_path, COLOR_MODE),dtype=np.float32)
