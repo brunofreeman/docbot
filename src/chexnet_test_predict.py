@@ -55,9 +55,8 @@ def main(argv: List[str]) -> None:
     model.classifier = nn.Sequential(
             nn.Linear(num_ftrs, OUT_DIM),
             nn.Tanh()
-    ) 
-    model = model.to(device)
-    model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+    ).to(device)
+    # model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
     model.eval()
 
     # use model to populate predictions for a given row
@@ -66,8 +65,9 @@ def main(argv: List[str]) -> None:
         img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
         img /= MAX_PIXEL_INTENSITY
         img_tensor: torch.Tensor = torch.from_numpy(img).to(device)
+        img_tensor = img_tensor.permute(0, 3, 1, 2)  # put the channels dimension first
 
-        prediction = model(img_tensor[None,])[0].detach().numpy()
+        prediction = model(img_tensor)[0].detach().numpy()
 
         # normalize so all value are in [-1, 1]
         prediction -= np.min(prediction)
