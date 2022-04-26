@@ -7,12 +7,12 @@ import torch.optim as optim
 import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchsummary import summary
-from dataset_simple import CheXpertTrainingDataset
+from dataset_chexnet import CheXpertTrainingDataset
 
 BATCH_SIZE: int = 32
 N_EPOCHS: int = 128
 
-IN_DIM: Tuple[int, int, int] = (1, 256, 256)
+IN_DIM: Tuple[int, int, int] = (3, 224, 224)
 OUT_DIM: int = 14
 
 def main(argv: List[str]) -> None:
@@ -23,16 +23,15 @@ def main(argv: List[str]) -> None:
         CheXpertTrainingDataset(device), batch_size=BATCH_SIZE, shuffle=True
     )
 
-    model = torchvision.models.densenet121(pretrained=True)
-    first_conv_layer = [nn.Conv2d(1, 3, kernel_size=(3,3))]
-    first_conv_layer.extend(list(model.features))  
-    model.features= nn.Sequential(*first_conv_layer ) 
+    model = torchvision.models.densenet121(pretrained=True) 
     num_ftrs = model.classifier.in_features
     model.classifier = nn.Sequential(
-            nn.Linear(num_ftrs, OUT_DIM)
+            nn.Linear(num_ftrs, OUT_DIM),
+            nn.Tanh()
     ) 
     model = model.to(device)
     print(model)
+    #summary(model, IN_DIM)
 
     # BCEWithLogitsLoss for a multi-class classification
     criterion = nn.BCEWithLogitsLoss()
@@ -44,7 +43,7 @@ def main(argv: List[str]) -> None:
     # training_loss_history = np.zeros([N_EPOCHS, 1])
     # validation_accuracy_history = np.zeros([N_EPOCHS, 1])
     # validation_loss_history = np.zeros([N_EPOCHS, 1])
-
+    
     for epoch_idx in range(N_EPOCHS):
         title: str = f"Epoch {epoch_idx+1:03d}/{N_EPOCHS}:"
         print(f"{title}\n{'-' * len(title)}")
@@ -111,7 +110,6 @@ def main(argv: List[str]) -> None:
             validation_accuracy_history[epoch_idx] = test_correct / test_total
         print(f', val loss: {validation_loss_history[epoch_idx, 0]:0.4f}, val acc: {validation_accuracy_history[epoch_idx, 0]:0.4f}')
         """
-
 
 if __name__ == "__main__":
     main(sys.argv)

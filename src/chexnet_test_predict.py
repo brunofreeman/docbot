@@ -13,8 +13,8 @@ PREDICITON_CSV_PATH: str = "./out/chexnet_v1_012.csv"
 OUT_DIM: int = 14
 
 MAX_PIXEL_INTENSITY: int = 255
-COLOR_MODE: int = cv2.IMREAD_GRAYSCALE
-RESOLUTION: Tuple[int, int] = (256, 256)
+COLOR_MODE: int = cv2.IMREAD_COLOR
+RESOLUTION: Tuple[int, int] = (224, 224)
 INTERPOLATION: int = cv2.INTER_CUBIC
 
 DATASET_NAME: str = (
@@ -22,7 +22,7 @@ DATASET_NAME: str = (
     f"{RESOLUTION[0]}x{RESOLUTION[1]}"
 )
 
-DATASET_PATH: str = f"/groups/CS156b/2022/team_dirs/docbot/{DATASET_NAME}"
+DATASET_PATH: str = f"/groups/CS156b/2022/team_dirs/mborkar_docbot/{DATASET_NAME}"
 TEST_ID_PATH: str = "/groups/CS156b/data/student_labels/test_ids.csv"
 
 ID_COL: str = "Id"
@@ -51,12 +51,10 @@ def main(argv: List[str]) -> None:
     
     # load pre-trained model
     model = torchvision.models.densenet121(pretrained=True)
-    first_conv_layer = [nn.Conv2d(1, 3, kernel_size=(3,3))]
-    first_conv_layer.extend(list(model.features))  
-    model.features= nn.Sequential(*first_conv_layer ) 
     num_ftrs = model.classifier.in_features
     model.classifier = nn.Sequential(
-            nn.Linear(num_ftrs, OUT_DIM)
+            nn.Linear(num_ftrs, OUT_DIM),
+            nn.Tanh()
     ) 
     model = model.to(device)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
