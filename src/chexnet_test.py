@@ -31,34 +31,34 @@ def main(argv: List[str]) -> None:
     ) 
     model = model.to(device)
     print(model)
-    #summary(model, IN_DIM)
 
     # BCEWithLogitsLoss for a multi-class classification
     criterion = nn.BCEWithLogitsLoss()
-
     optimizer = optim.RMSprop(model.parameters())
 
     # store metrics
-    # training_accuracy_history = np.zeros([N_EPOCHS, 1])
-    # training_loss_history = np.zeros([N_EPOCHS, 1])
-    # validation_accuracy_history = np.zeros([N_EPOCHS, 1])
-    # validation_loss_history = np.zeros([N_EPOCHS, 1])
+    training_accuracy_history = np.zeros([N_EPOCHS, 1])
+    training_loss_history = np.zeros([N_EPOCHS, 1])
+    validation_accuracy_history = np.zeros([N_EPOCHS, 1])
+    validation_loss_history = np.zeros([N_EPOCHS, 1])
+
     
     for epoch_idx in range(N_EPOCHS):
         title: str = f"Epoch {epoch_idx+1:03d}/{N_EPOCHS}:"
         print(f"{title}\n{'-' * len(title)}")
-
+        train_total = 0
+        train_correct = 0
         model.train()
+
         for batch_idx, (images, labels) in enumerate(data_loader):
-            print(type(images))
-            print(images)
+            #print(images)
             # erase acculmulated gradients
             optimizer.zero_grad()
 
             # forward pass
             output = model(images)
 
-            # copute loss
+            # compute loss
             loss = criterion(output, labels)
 
             # backward pass
@@ -66,41 +66,42 @@ def main(argv: List[str]) -> None:
 
             # update weights
             optimizer.step()
+
+            # track training accuracy
+            predicted = output.data
+            train_total += labels.size(0)
+            # TODO: calcaute AUC or something instead of this because the model 
+            # will literally never actually guess the exact right set of labels, and so this is always 0
+            train_correct += (predicted == labels).sum().item()
+            # track training loss
+            training_loss_history[epoch_idx] += loss.item()
+            print("loss", loss.item())
+           
+            # progress update after 180 batches
+            if batch_idx % 180 == 0: print('.',end='')
+
+        # update loss and training accuracy
+        training_loss_history[epoch_idx] /= len(data_loader)
+        training_accuracy_history[epoch_idx] = train_correct / train_total
+        print(f'\n\tloss: {training_loss_history[epoch_idx,0]:0.4f}, acc: {training_accuracy_history[epoch_idx,0]:0.4f}')
         
         save_path: str = f"./out/chexnet_v1_{(epoch_idx + 1):03d}.pt"
         print(f"Saving model to {save_path}")
         torch.save(model.state_dict(), save_path)
-        
-        # TODO @mbatchev
-        """   
-            # track training accuracy
-            _, predicted = torch.max(output.data, 1)
-            train_total += labels.size(0)
-            print(predicted)
-            train_correct += (predicted == labels).sum().item()
-            # track training loss
-            training_loss_history[epoch_idx] += loss.item()
-            # progress update after 180 batches (~1/10 epoch for batch size 32)
-            if i % 180 == 0: print('.',end='')
-       
-        train_total = 0
-        train_correct = 0
 
-        training_loss_history[epoch_idx] /= len(data_loader)
-        training_accuracy_history[epoch_idx] = train_correct / train_total
-        print(f'\n\tloss: {training_loss_history[epoch,0]:0.4f}, acc: {training_accuracy_history[epoch,0]:0.4f}',end='')
-            
         # validate
         test_total = 0
         test_correct = 0
+
         with torch.no_grad():
             model.eval()
             for i, data in enumerate(data_loader):
+               
                 images, labels = data
                 # forward pass
                 output = model(images)
                 # find accuracy
-                _, predicted = torch.max(output.data, 1)
+                predicted = output.data
                 test_total += labels.size(0)
                 test_correct += (predicted == labels).sum().item()
                 # find loss
@@ -108,8 +109,7 @@ def main(argv: List[str]) -> None:
                 validation_loss_history[epoch_idx] += loss.item()
             validation_loss_history[epoch_idx] /= len(data_loader)
             validation_accuracy_history[epoch_idx] = test_correct / test_total
-        print(f', val loss: {validation_loss_history[epoch_idx, 0]:0.4f}, val acc: {validation_accuracy_history[epoch_idx, 0]:0.4f}')
-        """
+        print(f', val loss: {validation_loss_history[epoch_idx, 0]:0.4f}, val acc: {validation_accuracy_history[epoch_idx, 0]:0.4f}')        
 
 if __name__ == "__main__":
     main(sys.argv)
