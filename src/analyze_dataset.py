@@ -92,13 +92,13 @@ def main(argv: List[str]) -> None:
         tablefmt="fancy_grid"
     ))
 
-    print(f"outlier files not analyzed: {outlier_files}")
-
     # number of non-NaN entries per pathology
     non_nan: List[int] = [0] * len(PATHOLOGIES)
     non_nan_f: List[int] = [0] * len(PATHOLOGIES)
     non_nan_l: List[int] = [0] * len(PATHOLOGIES)
     for _, row in df_labels.iterrows():
+        if row["Path"] in outlier_files:
+            continue
         filter = row.notna()
         for pi in range(len(PATHOLOGIES)):
             if filter[PATHOLOGIES[pi]]:
@@ -141,6 +141,8 @@ def main(argv: List[str]) -> None:
         headers=["", "No. Fronal", "No. Lateral"],
         tablefmt="fancy_grid"
     ))
+
+    print(f"outlier files: {outlier_files}")
 
 
 

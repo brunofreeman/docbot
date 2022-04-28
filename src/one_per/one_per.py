@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchsummary import summary
-from dataset_one_per import CheXpertOnePerDataset, PATHOLOGIES
+from one_per_dataset import CheXpertOnePerDataset, PATHOLOGIES
 
 BATCH_SIZE: int = 32
 N_EPOCHS: int = 16

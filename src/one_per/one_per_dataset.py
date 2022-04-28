@@ -39,9 +39,9 @@ class ViewType(Enum):
         else:
             raise ValueError
 
-
+# 1 point discepency for No Finding and Pneumothorax
 N_TRAIN: Dict[ViewType, List[int]] = {
-    ViewType.FRONTAL: [152289, 30174, 33152, 83389, 7558, 62234, 46259, 17873, 48931, 54322, 89477, 3783, 8603, 92446],
+    ViewType.FRONTAL: [152288, 30174, 33152, 83389, 7558, 62234, 46259, 17873, 48931, 54321, 89477, 3783, 8603, 92446],
     ViewType.LATERAL: [ 25860,  8520,  7756, 11375, 2560,  6916, 11068,  4030,  6281,  8542, 17233, 1654, 2045,  8054]
 }
 

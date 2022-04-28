@@ -3,7 +3,7 @@ import os
 from typing import List
 import numpy as np
 import pandas as pd
-from dataset_one_per import PATHOLOGIES, ViewType, N_TRAIN, index_filename
+from one_per_dataset import PATHOLOGIES, ViewType, N_TRAIN, index_filename
 
 TRAIN_PATH: str = "/groups/CS156b/data/train"
 LABEL_PATH: str = "/groups/CS156b/data/student_labels/train.csv"
