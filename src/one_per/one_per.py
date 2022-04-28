@@ -14,7 +14,7 @@ IN_DIM: Tuple[int, int, int] = (1, 256, 256)
 OUT_DIM: int = 1
 
 def usage(argv: List[str]) -> None:
-    print(f"usage: {argv[0]} <pi \u2208 [0, 13]>")
+    print(f"usage: {argv[0]} <i \u2208 [0, 13]>")
     sys.exit(1)
 
 def main(argv: List[str]) -> None:
@@ -64,7 +64,7 @@ def main(argv: List[str]) -> None:
     summary(model, IN_DIM)
     print()
 
-    criterion = nn.MSELoss()
+    criterion = nn.MSLELoss()
 
     optimizer = optim.RMSprop(model.parameters())
 

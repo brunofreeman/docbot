@@ -8,6 +8,9 @@ from tabulate import tabulate
 
 TRAIN_LABEL_CSV_FILEPATH: str = "/groups/CS156b/data/student_labels/train.csv"
 
+TST_ID_PATH: str = "/groups/CS156b/data/student_labels/test_ids.csv"
+SOL_ID_PATH: str = "/groups/CS156b/data/student_labels/solution_ids.csv"
+
 PATHOLOGIES: List[str] = [
     "No Finding",
     "Enlarged Cardiomediastinum",
@@ -90,6 +93,55 @@ def main(argv: List[str]) -> None:
     ))
 
     print(f"outlier files not analyzed: {outlier_files}")
+
+    # number of non-NaN entries per pathology
+    non_nan: List[int] = [0] * len(PATHOLOGIES)
+    non_nan_f: List[int] = [0] * len(PATHOLOGIES)
+    non_nan_l: List[int] = [0] * len(PATHOLOGIES)
+    for _, row in df_labels.iterrows():
+        filter = row.notna()
+        for pi in range(len(PATHOLOGIES)):
+            if filter[PATHOLOGIES[pi]]:
+                non_nan[pi] += 1
+                if "frontal" in row["Path"]:
+                    non_nan_f[pi] += 1
+                elif "lateral" in row["Path"]:
+                    non_nan_l[pi] += 1
+                else:
+                    assert(False and "non-frontal, non-lateral image!")
+    
+    print(tabulate(
+        sorted(zip(PATHOLOGIES, non_nan, non_nan_f, non_nan_l), key=lambda x : -x[1]),
+        headers=["Pathology", "No. Non-NaN Values (Total)", "... (Frontal)", "... (Lateral)"],
+        tablefmt="fancy_grid"
+    ))
+
+    tst_ids: pd.DataFrame = pd.read_csv(TST_ID_PATH)
+    sol_ids: pd.DataFrame = pd.read_csv(SOL_ID_PATH)
+
+    n_tst_fro = n_tst_lat = n_sol_fro = n_sol_lat = 0
+    for _, row in tst_ids.iterrows():
+        if "frontal" in row["Path"]:
+            n_tst_fro += 1
+        elif "lateral" in row["Path"]:
+            n_tst_lat += 1
+        else:
+            assert(False and "non-frontal, non-lateral image!")
+
+    for _, row in sol_ids.iterrows():
+        if "frontal" in row["Path"]:
+            n_sol_fro += 1
+        elif "lateral" in row["Path"]:
+            n_sol_lat += 1
+        else:
+            assert(False and "non-frontal, non-lateral image!")
+    
+    print(tabulate(
+        [("Test Set", n_tst_fro, n_tst_lat), ("Solution Set", n_sol_fro, n_sol_lat)],
+        headers=["", "No. Fronal", "No. Lateral"],
+        tablefmt="fancy_grid"
+    ))
+
 
 
 if __name__ == "__main__":
