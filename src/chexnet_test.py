@@ -36,18 +36,11 @@ def main(argv: List[str]) -> None:
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.RMSprop(model.parameters())
 
-    # store metrics
-    training_accuracy_history = np.zeros([N_EPOCHS, 1])
-    training_loss_history = np.zeros([N_EPOCHS, 1])
-    validation_accuracy_history = np.zeros([N_EPOCHS, 1])
-    validation_loss_history = np.zeros([N_EPOCHS, 1])
 
-    
     for epoch_idx in range(N_EPOCHS):
         title: str = f"Epoch {epoch_idx+1:03d}/{N_EPOCHS}:"
         print(f"{title}\n{'-' * len(title)}")
-        train_total = 0
-        train_correct = 0
+        training_loss: float = 0.0
         model.train()
 
         for batch_idx, (images, labels) in enumerate(data_loader):
@@ -67,49 +60,20 @@ def main(argv: List[str]) -> None:
             # update weights
             optimizer.step()
 
-            # track training accuracy
-            predicted = output.data
-            train_total += labels.size(0)
-            # TODO: calcaute AUC or something instead of this because the model 
-            # will literally never actually guess the exact right set of labels, and so this is always 0
-            train_correct += (predicted == labels).sum().item()
-            # track training loss
-            training_loss_history[epoch_idx] += loss.item()
-            print("loss", loss.item())
-           
-            # progress update after 180 batches
-            if batch_idx % 180 == 0: print('.',end='')
+            training_loss += loss.item()
+            print(loss)
 
         # update loss and training accuracy
-        training_loss_history[epoch_idx] /= len(data_loader)
-        training_accuracy_history[epoch_idx] = train_correct / train_total
-        print(f'\n\tloss: {training_loss_history[epoch_idx,0]:0.4f}, acc: {training_accuracy_history[epoch_idx,0]:0.4f}')
-        
+        training_loss /= len(data_loader)
+
         save_path: str = f"./out/chexnet_v1_{(epoch_idx + 1):03d}.pt"
+        f = open("./out/chexnet_test_live.txt", "w")
+        f.write(f"loss: {training_loss:0.4f}")
+        f.close()
+        print(f"loss: {training_loss:0.4f}")
         print(f"Saving model to {save_path}")
         torch.save(model.state_dict(), save_path)
-
-        # validate
-        test_total = 0
-        test_correct = 0
-
-        with torch.no_grad():
-            model.eval()
-            for i, data in enumerate(data_loader):
-               
-                images, labels = data
-                # forward pass
-                output = model(images)
-                # find accuracy
-                predicted = output.data
-                test_total += labels.size(0)
-                test_correct += (predicted == labels).sum().item()
-                # find loss
-                loss = criterion(output, labels)
-                validation_loss_history[epoch_idx] += loss.item()
-            validation_loss_history[epoch_idx] /= len(data_loader)
-            validation_accuracy_history[epoch_idx] = test_correct / test_total
-        print(f', val loss: {validation_loss_history[epoch_idx, 0]:0.4f}, val acc: {validation_accuracy_history[epoch_idx, 0]:0.4f}')        
+     
 
 if __name__ == "__main__":
     main(sys.argv)

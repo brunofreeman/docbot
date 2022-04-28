@@ -7,8 +7,8 @@ import torch.nn as nn
 import cv2
 import pandas as pd
 
-MODEL_PATH: str = "./out/chexnet_v1_012.pt"
-PREDICITON_CSV_PATH: str = "./out/chexnet_v1_012.csv"
+MODEL_PATH: str = "./out/chexnet_v1_022.pt"
+PREDICITON_CSV_PATH: str = "./out/chexnet_v1_022.csv"
 
 OUT_DIM: int = 14
 
@@ -56,7 +56,7 @@ def main(argv: List[str]) -> None:
             nn.Linear(num_ftrs, OUT_DIM),
             nn.Tanh()
     ).to(device)
-    # model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
     model.eval()
 
     # use model to populate predictions for a given row
@@ -68,11 +68,6 @@ def main(argv: List[str]) -> None:
         img_tensor = img_tensor.permute(0, 3, 1, 2)  # put the channels dimension first
 
         prediction = model(img_tensor)[0].detach().numpy()
-
-        # normalize so all value are in [-1, 1]
-        prediction -= np.min(prediction)
-        prediction = prediction / (np.max(prediction) / 2) - 1
-
         prediction = prediction.tolist()
         prediction.insert(0, id)
         return prediction
