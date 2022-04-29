@@ -99,6 +99,9 @@ class CheXpertOnePerDataset(Dataset):
         return self.len
 
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+        if not idx < self.len:
+            raise IndexError(f"access of index {idx} in dataset of length {self.len}")
+
         # path to the image
         img_path: str = f"{IMG_SRC_DIR}/{self.idx_to_dir(idx)}"
 
@@ -111,7 +114,8 @@ class CheXpertOnePerDataset(Dataset):
         row: pd.DataFrame = self.labels[
             self.labels["Path"].str.contains(img_path[len(IMG_SRC_DIR):])
         ]
-        assert(len(row) == 1)
+        if len(row) != 1:
+            raise ValueError(f"key of '{img_path[len(IMG_SRC_DIR):]}' yielded {len(row)} results, not 1")
         row: pd.Series = row.iloc[0]
         
         indicator: torch.Tensor = torch.FloatTensor([row[PATHOLOGIES[self.pathology_i]]])
@@ -120,8 +124,9 @@ class CheXpertOnePerDataset(Dataset):
         return img_tensor.to(self.device), indicator.to(self.device)
 
     def idx_to_dir(self, idx: int) -> str:
+        print(idx)
         idx_filename: str = index_filename(self.view_type, self.pathology_i)
-        line: str = linecache.getline(idx_filename, idx)
+        line: str = linecache.getline(idx_filename, idx + 1)  # linecache uses 1-indexing
         return line[:-1]  # remove trailing newline
 
 
