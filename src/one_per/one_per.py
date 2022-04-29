@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchsummary import summary
-from one_per_dataset import CheXpertOnePerDataset, PATHOLOGIES
+from one_per_dataset import CheXpertOnePerDataset, PATHOLOGIES, ViewType
 
 BATCH_SIZE: int = 32
 N_EPOCHS: int = 16
@@ -14,16 +14,25 @@ IN_DIM: Tuple[int, int, int] = (1, 256, 256)
 OUT_DIM: int = 1
 
 def usage(argv: List[str]) -> None:
-    print(f"usage: {argv[0]} <i \u2208 [0, 13]>")
+    print(f"usage: {argv[0]} {{f, l}} <i \u2208 [0, 13]>")
     sys.exit(1)
 
+
 def main(argv: List[str]) -> None:
-    try:
-        pi: int = int(argv[1])
-    except (IndexError, ValueError):
+    if len(argv) != 3:
+        usage(argv)
+    if argv[1] == 'f':
+        view_type = ViewType.FRONTAL
+    elif argv[1] == 'l':
+        view_type = ViewType.LATERAL
+    else:
         usage(argv)
     
-    if not (0 <= pi < len(PATHOLOGIES)):
+    try:
+        pi = int(argv[2])
+        if not (0 <= pi < len(PATHOLOGIES)):
+            usage(argv)
+    except ValueError:
         usage(argv)
 
     header: str = f"One-Per Model for Pathology {pi} ({PATHOLOGIES[pi]})"
@@ -33,29 +42,37 @@ def main(argv: List[str]) -> None:
     print(f"Device: {device}\n")
 
     data_loader = DataLoader(
-        CheXpertOnePerDataset(pi, device), batch_size=BATCH_SIZE, shuffle=True
+        CheXpertOnePerDataset(view_type, pi, device), batch_size=BATCH_SIZE, shuffle=True
     )
 
     model = nn.Sequential(
-        nn.Conv2d(1, 8, kernel_size=(3,3)),
-        nn.BatchNorm2d(8),
+        nn.Conv2d(1, 64, kernel_size=(17, 17)),
+        nn.BatchNorm2d(64),
         nn.ReLU(),
         nn.MaxPool2d(2),
         nn.Dropout(p=0.1),
         
-        nn.Conv2d(8, 16, kernel_size=(3,3)),
+        nn.Conv2d(64, 64, kernel_size=(11,11)),
+        nn.BatchNorm2d(64),
+        nn.ReLU(),
+
+        nn.Conv2d(64, 64, kernel_size=(7,7)),
+        nn.BatchNorm2d(64),
+        nn.ReLU(),
+
+        nn.Conv2d(64, 16, kernel_size=(2,2)),
         nn.BatchNorm2d(16),
         nn.ReLU(),
 
-        nn.Conv2d(16, 32, kernel_size=(3,3)),
+        nn.Conv2d(16, 32, kernel_size=(2,2)),
         nn.BatchNorm2d(32),
         nn.ReLU(),
         nn.Dropout(p=0.1),
         
         nn.Flatten(),
-        nn.Linear(484128, 64),
+        nn.Linear(332928, 502),
         nn.ReLU(),
-        nn.Linear(64, OUT_DIM),
+        nn.Linear(502, OUT_DIM),
         nn.Tanh()
     ).to(device)
 
@@ -64,7 +81,8 @@ def main(argv: List[str]) -> None:
     summary(model, IN_DIM)
     print()
 
-    criterion = nn.MSLELoss()
+    criterion = nn.MSELoss()
+
 
     optimizer = optim.RMSprop(model.parameters())
 

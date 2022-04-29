@@ -66,6 +66,7 @@ VIEW_PRIMARY: str = "/view1_frontal.jpg"
 VIEW_BACKUP: str = "/view1_lateral.jpg"
 
 def index_filename(vt: ViewType, pi: int) -> str:
+    #TODO: I think this should be hgiher up since we're already in one_per
     return f"./src/one_per/idx_files/{vt}_{pi:02d}.txt"
 
 
