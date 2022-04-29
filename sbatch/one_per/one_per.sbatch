@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=docbot_one_per_00
+#SBATCH --job-name=docbot_one_per
 
 #SBATCH --output=/home/%u/docbot/out/%x_%j_%u.out
 
 #SBATCH -A CS156b
-#SBATCH -t 16:00:00
+#SBATCH -t 24:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=16G

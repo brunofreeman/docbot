@@ -23,8 +23,8 @@ PATHOLOGIES: List[str] = (
     "Support Devices"
 )
 
-NAN_IGNORE_OUTPUT_CSV: str = "./out/avg_nan_ignore.csv"
-NAN_MINUS1_OUTPUT_CSV: str = "./out/avg_nan_minus1.csv"
+NAN_IGNORE_OUTPUT_CSV: str = "./out/csv/avg_nan_ignore.csv"
+NAN_MINUS1_OUTPUT_CSV: str = "./out/csv/avg_nan_minus1.csv"
 
 
 def main(argv: List[str]) -> None:

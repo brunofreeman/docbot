@@ -1,5 +1,4 @@
 import sys
-import os
 from typing import Dict, List, Tuple
 from enum import Enum
 import cv2
@@ -7,6 +6,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
+import linecache
 
 
 PATHOLOGIES: List[str] = [
@@ -39,7 +39,7 @@ class ViewType(Enum):
         else:
             raise ValueError
 
-# 1 point discepency for No Finding and Pneumothorax
+
 N_TRAIN: Dict[ViewType, List[int]] = {
     ViewType.FRONTAL: [152288, 30174, 33152, 83389, 7558, 62234, 46259, 17873, 48931, 54321, 89477, 3783, 8603, 92446],
     ViewType.LATERAL: [ 25860,  8520,  7756, 11375, 2560,  6916, 11068,  4030,  6281,  8542, 17233, 1654, 2045,  8054]
@@ -65,8 +65,8 @@ STUDY_DIR: str = "/study1"
 VIEW_PRIMARY: str = "/view1_frontal.jpg"
 VIEW_BACKUP: str = "/view1_lateral.jpg"
 
+
 def index_filename(vt: ViewType, pi: int) -> str:
-    #TODO: I think this should be hgiher up since we're already in one_per
     return f"./src/one_per/idx_files/{vt}_{pi:02d}.txt"
 
 
@@ -82,7 +82,6 @@ class CheXpertOnePerDataset(Dataset):
         self.pathology_i = pathology_i
         self.len = N_TRAIN[self.view_type][self.pathology_i]
         self.device = device
-        print(type(device))
         self.labels = pd.read_csv(LABEL_CSV_PATH)
         
         # drop unused columns
@@ -94,16 +93,14 @@ class CheXpertOnePerDataset(Dataset):
         ], axis=1, inplace=True)
 
         # drop all rows that have NaN value for our target pathology
-        print(len(self.labels))
         self.labels.dropna(subset=[PATHOLOGIES[self.pathology_i]], inplace=True)
-        print(len(self.labels))
 
     def __len__(self):
         return self.len
 
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
-        # get the path to the image
-        img_path: str = IMG_SRC_DIR + self.idx_to_dir(idx)
+        # path to the image
+        img_path: str = f"{IMG_SRC_DIR}/{self.idx_to_dir(idx)}"
 
         # convert the image into a PyTorch tensor and normalize [0, 255] -> [0, 1]
         img: np.ndarray = np.array([cv2.imread(img_path, COLOR_MODE)], dtype=np.float32)
@@ -124,8 +121,8 @@ class CheXpertOnePerDataset(Dataset):
 
     def idx_to_dir(self, idx: int) -> str:
         idx_filename: str = index_filename(self.view_type, self.pathology_i)
-        with open(idx_filename) as file:
-            return file[idx]
+        line: str = linecache.getline(idx_filename, idx)
+        return line[:-1]  # remove trailing newline
 
 
 def main(argv: List[str]) -> None:

@@ -7,7 +7,7 @@ import cv2
 import pandas as pd
 
 MODEL_PATH: str = "./out/cnn_v1_007.pt"
-PREDICITON_CSV_PATH: str = "./out/cnn_v1.csv"
+PREDICITON_CSV_PATH: str = "./out/csv/cnn_v1.csv"
 
 OUT_DIM: int = 14
 

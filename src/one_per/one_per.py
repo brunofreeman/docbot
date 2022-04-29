@@ -7,11 +7,13 @@ from torch.utils.data import DataLoader
 from torchsummary import summary
 from one_per_dataset import CheXpertOnePerDataset, PATHOLOGIES, ViewType
 
+
 BATCH_SIZE: int = 32
 N_EPOCHS: int = 16
 
 IN_DIM: Tuple[int, int, int] = (1, 256, 256)
 OUT_DIM: int = 1
+
 
 def usage(argv: List[str]) -> None:
     print(f"usage: {argv[0]} {{f, l}} <i \u2208 [0, 13]>")
@@ -35,44 +37,54 @@ def main(argv: List[str]) -> None:
     except ValueError:
         usage(argv)
 
-    header: str = f"One-Per Model for Pathology {pi} ({PATHOLOGIES[pi]})"
+    header: str = f"One-Per Model for Pathology {pi:02d} ({PATHOLOGIES[pi]})"
     print(f"{header}\n{'=' * len(header)}\n")
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(f"Device: {device}\n")
 
     data_loader = DataLoader(
         CheXpertOnePerDataset(view_type, pi, device), batch_size=BATCH_SIZE, shuffle=True
     )
 
     model = nn.Sequential(
-        nn.Conv2d(1, 64, kernel_size=(17, 17)),
-        nn.BatchNorm2d(64),
+        # in: 1 256x256 channel
+        nn.Conv2d(1, 128, kernel_size=32+1, padding="same"),
+        nn.BatchNorm2d(128),
         nn.ReLU(),
         nn.MaxPool2d(2),
         nn.Dropout(p=0.1),
         
-        nn.Conv2d(64, 64, kernel_size=(11,11)),
+        # in: 128 128x128 channels
+        nn.Conv2d(128, 128, kernel_size=32+1, padding="same"),
+        nn.BatchNorm2d(128),
+        nn.ReLU(),
+
+        # in: 128 128x128 channels
+        nn.Conv2d(128, 64, kernel_size=16+1, padding="same"),
         nn.BatchNorm2d(64),
         nn.ReLU(),
 
-        nn.Conv2d(64, 64, kernel_size=(7,7)),
+        # in: 64 128x128 channels
+        nn.Conv2d(64, 64, kernel_size=16),
         nn.BatchNorm2d(64),
         nn.ReLU(),
 
-        nn.Conv2d(64, 16, kernel_size=(2,2)),
-        nn.BatchNorm2d(16),
-        nn.ReLU(),
-
-        nn.Conv2d(16, 32, kernel_size=(2,2)),
-        nn.BatchNorm2d(32),
+        # in: 64 113x113 channels (113 = 128 - 16 + 1)
+        nn.Conv2d(64, 64, kernel_size=8),
+        nn.BatchNorm2d(64),
         nn.ReLU(),
         nn.Dropout(p=0.1),
         
-        nn.Flatten(),
-        nn.Linear(332928, 502),
+        # in: 64 106x106 channels (106 = 113 - 8 + 1)
+        nn.Conv2d(64, 32, kernel_size=8),
+        nn.BatchNorm2d(32),
         nn.ReLU(),
-        nn.Linear(502, OUT_DIM),
+
+        # in: 32 99x99 channels (99 = 106 - 8 + 1)
+        nn.Flatten(),
+        nn.Linear(32 * 99 * 99, 256),
+        nn.ReLU(),
+        nn.Linear(256, OUT_DIM),
         nn.Tanh()
     ).to(device)
 
@@ -83,8 +95,7 @@ def main(argv: List[str]) -> None:
 
     criterion = nn.MSELoss()
 
-
-    optimizer = optim.RMSprop(model.parameters())
+    optimizer = optim.Adam(model.parameters())
 
     for epoch_idx in range(N_EPOCHS):
         title: str = f"Epoch {epoch_idx+1:03d}/{N_EPOCHS:03d}:"
@@ -116,7 +127,7 @@ def main(argv: List[str]) -> None:
         training_loss /= len(data_loader)
         
         # save model
-        save_path: str = f"./out/one_per_p{pi:02d}_e{(epoch_idx + 1):03d}.pt"
+        save_path: str = f"./out/one_per_v2/one_per_p{pi:02d}_e{(epoch_idx + 1):03d}.pt"
         torch.save(model.state_dict(), save_path)
 
         print(f"loss: {training_loss:0.4f}")
