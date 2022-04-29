@@ -31,15 +31,16 @@ def main(argv: List[str]) -> None:
     ) 
     model = model.to(device)
     print(model)
-
-    # BCEWithLogitsLoss for a multi-class classification
-    criterion = nn.BCEWithLogitsLoss()
-    optimizer = optim.RMSprop(model.parameters())
-
+    criterion = nn.MSELoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
     for epoch_idx in range(N_EPOCHS):
+
+        f = open("./out/chexnet_test_live.txt", "a")
         title: str = f"Epoch {epoch_idx+1:03d}/{N_EPOCHS}:"
         print(f"{title}\n{'-' * len(title)}")
+        f.write(f"{title}\n{'-' * len(title)}\n")
+        f.close()
         training_loss: float = 0.0
         model.train()
 
@@ -61,18 +62,18 @@ def main(argv: List[str]) -> None:
             optimizer.step()
 
             training_loss += loss.item()
-            print(loss)
 
         # update loss and training accuracy
         training_loss /= len(data_loader)
 
         save_path: str = f"./out/chexnet_v1_{(epoch_idx + 1):03d}.pt"
-        f = open("./out/chexnet_test_live.txt", "w")
-        f.write(f"loss: {training_loss:0.4f}")
+        f = open("./out/chexnet_test_live.txt", "a")
+        f.write(f"loss: {training_loss:0.4f}\n")
         f.close()
         print(f"loss: {training_loss:0.4f}")
         print(f"Saving model to {save_path}")
-        torch.save(model.state_dict(), save_path)
+        torch.save(model.state_dict(), save_path)   
+    f.close()    
      
 
 if __name__ == "__main__":

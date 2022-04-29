@@ -6,9 +6,10 @@ import torchvision
 import torch.nn as nn
 import cv2
 import pandas as pd
+from torchvision import transforms
 
-MODEL_PATH: str = "./out/chexnet_v1_022.pt"
-PREDICITON_CSV_PATH: str = "./out/chexnet_v1_022.csv"
+MODEL_PATH: str = "./out/chexnet_v1_025.pt"
+PREDICITON_CSV_PATH: str = "./out/chexnet_v1_025.csv"
 
 OUT_DIM: int = 14
 
@@ -66,7 +67,10 @@ def main(argv: List[str]) -> None:
         img /= MAX_PIXEL_INTENSITY
         img_tensor: torch.Tensor = torch.from_numpy(img).to(device)
         img_tensor = img_tensor.permute(0, 3, 1, 2)  # put the channels dimension first
-
+        preprocess = transforms.Compose([
+                                     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                                     ])
+        img_tensor = preprocess(img_tensor)                    
         prediction = model(img_tensor)[0].detach().numpy()
         prediction = prediction.tolist()
         prediction.insert(0, id)

@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
 
 """
 The train/ directory contains subdirectores of the form pid{:05d}
@@ -93,8 +94,12 @@ class CheXpertTrainingDataset(Dataset):
             img: np.ndarray = np.array(cv2.imread(img_path, COLOR_MODE),dtype=np.float32)
             img /= MAX_PIXEL_INTENSITY
 
+        preprocess = transforms.Compose([
+                                     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                                     ])
         img_tensor: torch.Tensor = torch.from_numpy(img)
         img_tensor = img_tensor.permute(2, 1, 0) # put the channels dimension first
+        img_tensor = preprocess(img_tensor)
 
         # grab the indicator vector from the label data frame
         row: pd.Series = self.labels[
