@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchsummary import summary
-from dataset_simple import CheXpertTrainingDataset
+from simple_dataset import CheXpertTrainingDataset
 
 BATCH_SIZE: int = 32
 N_EPOCHS: int = 128

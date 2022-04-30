@@ -4,9 +4,9 @@ from typing import List, Tuple
 import numpy as np
 import cv2
 
-
-COLOR_MODE: int = cv2.IMREAD_GRAYSCALE
-RESOLUTION: Tuple[int, int] = (256, 256)
+# options: cv2.IMREAD_{COLOR, GRAYSCALE}
+COLOR_MODE: int = cv2.IMREAD_COLOR
+RESOLUTION: Tuple[int, int] = (512, 512)
 INTERPOLATION: int = cv2.INTER_CUBIC
 
 DST_DIR: str = f"{'greyscale' if COLOR_MODE == cv2.IMREAD_GRAYSCALE else 'color'}{RESOLUTION[0]}x{RESOLUTION[1]}"

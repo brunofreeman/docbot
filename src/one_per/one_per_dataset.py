@@ -124,7 +124,6 @@ class CheXpertOnePerDataset(Dataset):
         return img_tensor.to(self.device), indicator.to(self.device)
 
     def idx_to_dir(self, idx: int) -> str:
-        print(idx)
         idx_filename: str = index_filename(self.view_type, self.pathology_i)
         line: str = linecache.getline(idx_filename, idx + 1)  # linecache uses 1-indexing
         return line[:-1]  # remove trailing newline
