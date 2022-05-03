@@ -9,11 +9,12 @@ from torch.utils.data import Dataset, DataLoader
 from torchsummary import summary
 from dataset_chexnet import CheXpertTrainingDataset
 
-BATCH_SIZE: int = 32
+BATCH_SIZE: int = 16
 N_EPOCHS: int = 128
 
-IN_DIM: Tuple[int, int, int] = (3, 224, 224)
+IN_DIM: Tuple[int, int, int] = (3, 512, 512)
 OUT_DIM: int = 14
+
 
 def main(argv: List[str]) -> None:
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -24,11 +25,14 @@ def main(argv: List[str]) -> None:
     )
 
     model = torchvision.models.densenet121(pretrained=True) 
-    num_ftrs = model.classifier.in_features
     model.classifier = nn.Sequential(
-            nn.Linear(num_ftrs, OUT_DIM),
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, OUT_DIM),
             nn.Tanh()
-    ) 
+    )
     model = model.to(device)
     print(model)
     criterion = nn.MSELoss()

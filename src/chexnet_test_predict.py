@@ -8,14 +8,14 @@ import cv2
 import pandas as pd
 from torchvision import transforms
 
-MODEL_PATH: str = "./out/chexnet_v1_025.pt"
-PREDICITON_CSV_PATH: str = "./out/chexnet_v1_025.csv"
+MODEL_PATH: str = "./out/chexnet_v1_001.pt"
+PREDICITON_CSV_PATH: str = "./out/chexnet_v1_001.csv"
 
 OUT_DIM: int = 14
 
 MAX_PIXEL_INTENSITY: int = 255
 COLOR_MODE: int = cv2.IMREAD_COLOR
-RESOLUTION: Tuple[int, int] = (224, 224)
+RESOLUTION: Tuple[int, int] = (512, 512)
 INTERPOLATION: int = cv2.INTER_CUBIC
 
 DATASET_NAME: str = (
@@ -51,12 +51,16 @@ def main(argv: List[str]) -> None:
     print(f"device: {device}")
     
     # load pre-trained model
-    model = torchvision.models.densenet121(pretrained=True)
-    num_ftrs = model.classifier.in_features
+    model = torchvision.models.densenet121(pretrained=True) 
     model.classifier = nn.Sequential(
-            nn.Linear(num_ftrs, OUT_DIM),
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, OUT_DIM),
             nn.Tanh()
-    ).to(device)
+    )
+    model = model.to(device)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
     model.eval()
 
@@ -71,7 +75,7 @@ def main(argv: List[str]) -> None:
                                      transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                      ])
         img_tensor = preprocess(img_tensor)                    
-        prediction = model(img_tensor)[0].detach().numpy()
+        prediction = model(img_tensor)[0].cpu().detach().numpy()
         prediction = prediction.tolist()
         prediction.insert(0, id)
         return prediction

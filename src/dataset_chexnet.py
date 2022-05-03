@@ -20,7 +20,7 @@ NAN_VALUE: float = 0.0
 MAX_PIXEL_INTENSITY: int = 255
 
 COLOR_MODE: int = cv2.IMREAD_COLOR
-RESOLUTION: Tuple[int, int] = (224, 224)
+RESOLUTION: Tuple[int, int] = (512, 512)
 INTERPOLATION: int = cv2.INTER_CUBIC
 
 DATASET_NAME: str = (
