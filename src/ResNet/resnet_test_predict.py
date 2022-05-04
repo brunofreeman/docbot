@@ -1,5 +1,3 @@
-#TODO: This file is not ready yet
-
 import sys
 from typing import Dict, List, Tuple
 import numpy as np
@@ -10,8 +8,8 @@ import cv2
 import pandas as pd
 from torchvision import transforms
 
-MODEL_PATH: str = "./out/resnet_v1_001.pt"
-PREDICITON_CSV_PATH: str = "./out/resnet_v1_001.csv"
+MODEL_PATH: str = "./out/resnet_v1_002.pt"
+PREDICITON_CSV_PATH: str = "./out/resnet_v1_002.csv"
 
 OUT_DIM: int = 14
 
@@ -53,17 +51,25 @@ def main(argv: List[str]) -> None:
     print(f"device: {device}")
     
     # load pre-trained model
-    model = torchvision.models.densenet121(pretrained=True) 
-    model.classifier = nn.Sequential(
-            nn.Linear(1024, 512),
+    model  = torchvision.models.resnet152(pretrained=False)
+
+    # had to switch model.classifier to model.fc to access last layer, also 2048 to interface
+    # changed this to a single layer
+    # model.fc = nn.Sequential(
+    #         nn.Linear(2048, OUT_DIM),
+    #         nn.Tanh()
+    # )
+
+    model.fc = nn.Sequential(
+            nn.Linear(2048, 512),
             nn.ReLU(),
             nn.Linear(512, 256),
             nn.ReLU(),
             nn.Linear(256, OUT_DIM),
             nn.Tanh()
     )
-    model = model.to(device)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+    model = model.to(device)
     model.eval()
 
     # use model to populate predictions for a given row

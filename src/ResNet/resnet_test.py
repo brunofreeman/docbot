@@ -29,12 +29,9 @@ def main(argv: List[str]) -> None:
     model  = torchvision.models.resnet152(pretrained=False)
 
     # had to switch model.classifier to model.fc to access last layer, also 2048 to interface
+    # changed this to a single layer
     model.fc = nn.Sequential(
-            nn.Linear(2048, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, OUT_DIM),
+            nn.Linear(2048, OUT_DIM),
             nn.Tanh()
     )
     model = model.to(device)
@@ -44,7 +41,7 @@ def main(argv: List[str]) -> None:
 
     for epoch_idx in range(N_EPOCHS):
 
-        f = open("./out/resnet_test_live.txt", "a")
+        f = open("./out/resnet_test_live_smaller.txt", "a")
         title: str = f"Epoch {epoch_idx+1:03d}/{N_EPOCHS}:"
         print(f"{title}\n{'-' * len(title)}")
         f.write(f"{title}\n{'-' * len(title)}\n")
@@ -77,8 +74,8 @@ def main(argv: List[str]) -> None:
         # update loss and training accuracy
         training_loss /= len(data_loader)
 
-        save_path: str = f"./out/resnet_v1_{(epoch_idx + 1):03d}.pt"
-        f = open("./out/resnet_test_live.txt", "a")
+        save_path: str = f"./out/resnet_v1_smaller_{(epoch_idx + 1):03d}.pt"
+        f = open("./out/resnet_test_live_smaller.txt", "a")
         f.write(f"loss: {training_loss:0.4f}\n")
         f.close()
         print(f"loss: {training_loss:0.4f}")
