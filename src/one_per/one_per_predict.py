@@ -66,7 +66,7 @@ def main(argv: List[str]) -> None:
         img /= MAX_PIXEL_INTENSITY
         img_tensor: torch.Tensor = torch.from_numpy(img).to(device)
 
-        prediction = [0] * len(PATHOLOGIES)
+        prediction: List[int] = [0] * len(PATHOLOGIES)
 
         if str(ViewType.FRONTAL) in path:
             vt = ViewType.FRONTAL
@@ -75,10 +75,18 @@ def main(argv: List[str]) -> None:
         else:
             raise ValueError
         
+        i = 0
+
         for pi, model in enumerate(models[vt]):
-            predictions[pi] = model(img_tensor[None,])[0].detach().numpy()[0]
+            v = float(model(img_tensor[None,])[0].detach().numpy()[0])
+            print(type(v), v)
+            prediction[pi] = v 
 
         prediction.insert(0, id)
+        print(type(prediction), prediction)
+        if i > 0:
+            sys.exit()
+        i += 1
         return prediction
         
     # get a data frame with (Id, Path) pairs
