@@ -11,7 +11,7 @@ from dnop_dataset import DNOPDataset, PATHOLOGIES, ViewType
 
 
 BATCH_SIZE: int = 32
-N_EPOCHS: int = 3
+N_EPOCHS: int = 16
 
 IN_DIM: Tuple[int, int, int] = (3, 256, 256)
 OUT_DIM: int = 3
@@ -32,12 +32,15 @@ def is_save_filename(filename: str) -> bool:
     return re.fullmatch(SAVE_PATTERN, filename)
 
 
-def extract_epoch(save_name: str) -> int:
-    return int(save_name[-6:-3])
+def extract_params(save_name: str) -> Tuple[ViewType, int, int]:
+    vt = ViewType.FRONTAL if str(ViewType.FRONTAL) in save_name else ViewType.LATERAL
+    pi = int(save_name[-10:-8])
+    epoch = int(save_name[-6:-3])
+    return vt, pi, epoch
 
 
 def usage(argv: List[str]) -> None:
-    print(f"usage: {argv[0]} {{f, l}} <i \u2208 [0, 13]>")
+    print(f"usage: {argv[0]} {{f, l}} <i \u2208 [0, 13]>", flush=True)
     sys.exit(1)
 
 
@@ -72,13 +75,15 @@ def main(argv: List[str]) -> None:
         usage(argv)
 
     header: str = f"DNOP Model for Pathology {pi:02d} ({PATHOLOGIES[pi]})"
-    print(f"{header}\n{'=' * len(header)}\n")
+    print(f"{header}\n{'=' * len(header)}\n", flush=True)
 
     epoch_idx: int = 0
 
     for pt_file in os.listdir(OUT_DIR):
         if is_save_filename(pt_file):
-            epoch_idx = max(epoch_idx, extract_epoch(pt_file))
+            v, p, e = extract_params(pt_file)
+            if v == view_type and p == pi:
+                epoch_idx = max(epoch_idx, e)
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -88,13 +93,13 @@ def main(argv: List[str]) -> None:
 
     model = get_model(device)
 
-    print("Model:")
-    print(model)
+    print("Model:", flush=True)
+    print(model, flush=True)
 
     if epoch_idx > 0:
         load_path: str = get_save_filepath(view_type, pi, epoch_idx)
         model.load_state_dict(torch.load(load_path, map_location=device))
-        print(f"Loaded {load_path}")
+        print(f"Loaded {load_path}", flush=True)
     
     print()
 
@@ -105,7 +110,7 @@ def main(argv: List[str]) -> None:
 
     for _ in range(N_EPOCHS):
         title: str = f"Epoch {(epoch_idx + 1):03d}/{(init_epochs + N_EPOCHS):03d}:"
-        print(f"{title}\n{'-' * len(title)}")
+        print(f"{title}\n{'-' * len(title)}", flush=True)
 
         training_loss: float = 0.0
 
@@ -142,8 +147,8 @@ def main(argv: List[str]) -> None:
             if os.path.exists(old_save_path):
                 os.remove(old_save_path)
 
-        print(f"loss: {training_loss:0.8f}")
-        print(f"model saved to {save_path}")
+        print(f"loss: {training_loss:0.8f}", flush=True)
+        print(f"model saved to {save_path}", flush=True)
         print()
 
         epoch_idx += 1

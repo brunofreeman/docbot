@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=docbot_one_per
+#SBATCH --job-name=docbot_dnop
 
 #SBATCH --output=/home/%u/docbot/out/dnop/out/%j_%x.out
 
@@ -20,5 +20,5 @@ UNAME=bfreeman
 cd /home/"${UNAME}"/docbot
 mkdir out
 source /groups/CS156b/2022/venvs/docbotvenv/bin/activate
-python3 src/one_per/one_per.py $1 $2
+python3 src/dnop/dnop.py $1 $2
 deactivate
