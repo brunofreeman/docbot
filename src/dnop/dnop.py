@@ -1,7 +1,7 @@
 import sys
 import os
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -16,7 +16,7 @@ N_EPOCHS: int = 16
 IN_DIM: Tuple[int, int, int] = (3, 256, 256)
 OUT_DIM: int = 3
 
-OUT_DIR: str = "./out/dnop"
+SAVE_DIR: str = "./out/dnop"
 SAVE_PATTERN: str = r"dnop_(frontal|lateral)_p[0-9]{2}_e[0-9]{3}.pt"
 
 
@@ -25,7 +25,7 @@ def get_save_filename(view_type: ViewType, pi: int, ei: int) -> str:
 
 
 def get_save_filepath(view_type: ViewType, pi: int, ei: int) -> str:
-    return f"{OUT_DIR}/{get_save_filename(view_type, pi, ei)}"
+    return f"{SAVE_DIR}/{get_save_filename(view_type, pi, ei)}"
 
 
 def is_save_filename(filename: str) -> bool:
@@ -57,7 +57,7 @@ def get_model(device: torch.device) -> nn.Sequential:
     return model.to(device)
 
 
-def main(argv: List[str]) -> None:
+def parse_args(argv: List[str]) -> Tuple[ViewType, int]:
     if len(argv) != 3:
         usage(argv)
     if argv[1] == 'f':
@@ -73,17 +73,29 @@ def main(argv: List[str]) -> None:
             usage(argv)
     except ValueError:
         usage(argv)
+    
+    return view_type, pi
 
-    header: str = f"DNOP Model for Pathology {pi:02d} ({PATHOLOGIES[pi]})"
-    print(f"{header}\n{'=' * len(header)}\n", flush=True)
 
-    epoch_idx: int = 0
-
-    for pt_file in os.listdir(OUT_DIR):
+def most_recent_save(view_type: ViewType, pi: int) -> Optional[str]:
+    ei: int = 0
+    filename = None
+    for pt_file in os.listdir(SAVE_DIR):
         if is_save_filename(pt_file):
             v, p, e = extract_params(pt_file)
-            if v == view_type and p == pi:
-                epoch_idx = max(epoch_idx, e)
+            if v == view_type and p == pi and ei < e:
+                ei = e
+                filename = pt_file
+    return filename
+
+
+def main(argv: List[str]) -> None:
+    view_type, pi = parse_args(argv)
+
+    header: str = f"DNOP Model for Pathology {pi:02d} ({PATHOLOGIES[pi]}) -- {str(view_type).capitalize()} View"
+    print(f"{header}\n{'=' * len(header)}\n", flush=True)
+
+    _, _, epoch_idx = extract_params(most_recent_save(view_type, pi))
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -93,8 +105,8 @@ def main(argv: List[str]) -> None:
 
     model = get_model(device)
 
-    print("Model:", flush=True)
-    print(model, flush=True)
+    # print("Model:", flush=True)
+    # print(model, flush=True)
 
     if epoch_idx > 0:
         load_path: str = get_save_filepath(view_type, pi, epoch_idx)
