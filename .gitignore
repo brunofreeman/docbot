@@ -1,5 +1,6 @@
 # Generated Files
-out/
+out/**
+!out/.gitkeep
 
 # IDE Metadata Folders
 .idea/

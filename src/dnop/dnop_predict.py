@@ -2,22 +2,25 @@ import sys
 from typing import List
 import numpy as np
 import torch
+import torch.nn as nn
 import cv2
 import pandas as pd
 from dnop_dataset import ViewType, PATHOLOGIES, DATASET_NAME, COLOR_MODE, DNOPDataset
 from dnop import SAVE_DIR, get_model, most_recent_save
 
 
-PREDICITON_CSV_PATH: str = "./out/csv/dnop_v1.csv"
+CSV_DIR: str = "./out/csv"
 DATASET_PATH: str = f"/groups/CS156b/2022/team_dirs/docbot/{DATASET_NAME}"
 TEST_ID_PATH: str = "/groups/CS156b/data/student_labels/test_ids.csv"
 ID_COL: str = "Id"
 
 
+def get_csv_filepath(pi: int) -> str:
+    return f"{CSV_DIR}/dnop_v1_p{pi:02d}.csv"
+
 def one_hot_to_label(vec: torch.Tensor) -> float:
     # -1 * vec[0] + 0 * vec[1] + 1 * vec[2]
-    return vec[2] - vec[0]
-
+    return float(vec[2] - vec[0])
 
 def usage(argv: List[str]) -> None:
     print(f"usage: {argv[0]} <i \u2208 [0, 13]>", flush=True)
@@ -63,10 +66,8 @@ def main(argv: List[str]) -> None:
         else:
             raise ValueError
 
-        prediction = model(img_tensor[None,])[0].detach().numpy()
-
-        prediction = prediction.tolist()
-        prediction.insert(0, id)
+        # run model, extract the single output, run Softmax
+        prediction = nn.Softmax(dim=0)(model(img_tensor[None,])[0].detach())
 
         return [id, one_hot_to_label(prediction)]
         
@@ -82,8 +83,8 @@ def main(argv: List[str]) -> None:
         predictions.loc[i] = predict(str(row[ID_COL]), row["Path"])
     
     # write to CSV, sorted to make combining easier
-    predictions.sort([ID_COL], inplace=True)
-    predictions.to_csv(PREDICITON_CSV_PATH, index=False)
+    predictions.sort_values(ID_COL, inplace=True)
+    predictions.to_csv(get_csv_filepath(pi), index=False)
 
 
 if __name__ == "__main__":

@@ -47,7 +47,7 @@ N_TRAIN: Dict[ViewType, List[int]] = {
 }
 
 COLOR_MODE: int = cv2.IMREAD_GRAYSCALE
-RESOLUTION: Tuple[int, int] = (256, 256)
+RESOLUTION: Tuple[int, int] = (512, 512)
 INTERPOLATION: int = cv2.INTER_CUBIC
 
 DATASET_NAME: str = f"greyscale{RESOLUTION[0]}x{RESOLUTION[1]}"

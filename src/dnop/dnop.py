@@ -11,12 +11,15 @@ from dnop_dataset import DNOPDataset, PATHOLOGIES, ViewType
 
 
 BATCH_SIZE: int = 32
-N_EPOCHS: int = 16
+N_EPOCHS: int = 32
+
+D_LOSS_THRESHOLD: float = 0.0001
+N_CONSEC_DL_VIOLATIONS: int = 3
 
 IN_DIM: Tuple[int, int, int] = (3, 256, 256)
 OUT_DIM: int = 3
 
-SAVE_DIR: str = "./out/dnop"
+SAVE_DIR: str = "./out/dnop_v2"
 SAVE_PATTERN: str = r"dnop_(frontal|lateral)_p[0-9]{2}_e[0-9]{3}.pt"
 
 
@@ -47,6 +50,8 @@ def usage(argv: List[str]) -> None:
 def get_model(device: torch.device) -> nn.Sequential:
     model = torchvision.models.densenet121(pretrained=True) 
     model.classifier = nn.Sequential(
+        nn.Linear(2048, 1024),
+        nn.ReLU(),
         nn.Linear(1024, 512),
         nn.ReLU(),
         nn.Linear(512, 256),
@@ -92,10 +97,11 @@ def most_recent_save(view_type: ViewType, pi: int) -> Optional[str]:
 def main(argv: List[str]) -> None:
     view_type, pi = parse_args(argv)
 
-    header: str = f"DNOP Model for Pathology {pi:02d} ({PATHOLOGIES[pi]}) -- {str(view_type).capitalize()} View"
+    header: str = f"DNOP v2 Model for Pathology {pi:02d} ({PATHOLOGIES[pi]}) -- {str(view_type).capitalize()} View"
     print(f"{header}\n{'=' * len(header)}\n", flush=True)
 
-    _, _, epoch_idx = extract_params(most_recent_save(view_type, pi))
+    fname: Optional[str] = most_recent_save(view_type, pi)
+    epoch_idx = 0 if fname is None else extract_params(fname)[2]
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -104,9 +110,6 @@ def main(argv: List[str]) -> None:
     )
 
     model = get_model(device)
-
-    # print("Model:", flush=True)
-    # print(model, flush=True)
 
     if epoch_idx > 0:
         load_path: str = get_save_filepath(view_type, pi, epoch_idx)
@@ -119,6 +122,9 @@ def main(argv: List[str]) -> None:
     optimizer = optim.Adam(model.parameters())
 
     init_epochs: int = epoch_idx
+
+    best_loss: Optional[float] = None
+    ncv: int = 0
 
     for _ in range(N_EPOCHS):
         title: str = f"Epoch {(epoch_idx + 1):03d}/{(init_epochs + N_EPOCHS):03d}:"
@@ -162,6 +168,15 @@ def main(argv: List[str]) -> None:
         print(f"loss: {training_loss:0.8f}", flush=True)
         print(f"model saved to {save_path}", flush=True)
         print()
+
+        if best_loss is not None and best_loss - training_loss > D_LOSS_THRESHOLD:
+            ncv += 1
+            if ncv == N_CONSEC_DL_VIOLATIONS:
+                print("terminating early due to loss stagnation...", flush=True)
+                break
+        else:
+            best_loss = training_loss
+            ncv = 0
 
         epoch_idx += 1
 
