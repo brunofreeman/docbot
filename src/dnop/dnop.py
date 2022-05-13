@@ -10,7 +10,7 @@ import torchvision
 from dnop_dataset import DNOPDataset, PATHOLOGIES, ViewType
 
 
-BATCH_SIZE: int = 32
+BATCH_SIZE: int = 16
 N_EPOCHS: int = 32
 
 D_LOSS_THRESHOLD: float = 0.0001
@@ -50,7 +50,7 @@ def usage(argv: List[str]) -> None:
 def get_model(device: torch.device) -> nn.Sequential:
     model = torchvision.models.densenet121(pretrained=True) 
     model.classifier = nn.Sequential(
-        nn.Linear(2048, 1024),
+        nn.Linear(1024, 1024),
         nn.ReLU(),
         nn.Linear(1024, 512),
         nn.ReLU(),
@@ -101,7 +101,7 @@ def main(argv: List[str]) -> None:
     print(f"{header}\n{'=' * len(header)}\n", flush=True)
 
     fname: Optional[str] = most_recent_save(view_type, pi)
-    epoch_idx = 0 if fname is None else extract_params(fname)[2]
+    epochs_already = 0 if fname is None else extract_params(fname)[2]
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -111,8 +111,8 @@ def main(argv: List[str]) -> None:
 
     model = get_model(device)
 
-    if epoch_idx > 0:
-        load_path: str = get_save_filepath(view_type, pi, epoch_idx)
+    if epochs_already > 0:
+        load_path: str = get_save_filepath(view_type, pi, epochs_already)
         model.load_state_dict(torch.load(load_path, map_location=device))
         print(f"Loaded {load_path}", flush=True)
     
@@ -121,13 +121,14 @@ def main(argv: List[str]) -> None:
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters())
 
-    init_epochs: int = epoch_idx
-
     best_loss: Optional[float] = None
     ncv: int = 0
 
-    for _ in range(N_EPOCHS):
-        title: str = f"Epoch {(epoch_idx + 1):03d}/{(init_epochs + N_EPOCHS):03d}:"
+    if epochs_already >= N_EPOCHS:
+        print(f"all {N_EPOCHS} training epochs already complete, exiting...", flush=True)
+
+    for ei in range(epochs_already, N_EPOCHS):
+        title: str = f"Epoch {(ei + 1):03d}/{(N_EPOCHS):03d}:"
         print(f"{title}\n{'-' * len(title)}", flush=True)
 
         training_loss: float = 0.0
@@ -156,12 +157,12 @@ def main(argv: List[str]) -> None:
         training_loss /= len(data_loader)
         
         # save model
-        save_path = get_save_filepath(view_type, pi, epoch_idx + 1)
+        save_path = get_save_filepath(view_type, pi, ei + 1)
         torch.save(model.state_dict(), save_path)
 
         # remove save from previous epoch to save space
-        if epoch_idx > 0:
-            old_save_path: str = get_save_filepath(view_type, pi, epoch_idx)
+        if ei > 0:
+            old_save_path: str = get_save_filepath(view_type, pi, ei)
             if os.path.exists(old_save_path):
                 os.remove(old_save_path)
 
@@ -169,7 +170,7 @@ def main(argv: List[str]) -> None:
         print(f"model saved to {save_path}", flush=True)
         print()
 
-        if best_loss is not None and best_loss - training_loss > D_LOSS_THRESHOLD:
+        if best_loss is not None and best_loss - training_loss < D_LOSS_THRESHOLD:
             ncv += 1
             if ncv == N_CONSEC_DL_VIOLATIONS:
                 print("terminating early due to loss stagnation...", flush=True)
@@ -177,8 +178,6 @@ def main(argv: List[str]) -> None:
         else:
             best_loss = training_loss
             ncv = 0
-
-        epoch_idx += 1
 
 
 if __name__ == "__main__":

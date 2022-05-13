@@ -5,7 +5,7 @@ from dnop_dataset import PATHOLOGIES
 from dnop_predict import get_csv_filepath, CSV_DIR, ID_COL
 
 
-COMBINED_CSV_PATH: str = f"{CSV_DIR}/dnop_v1.csv"
+COMBINED_CSV_PATH: str = f"{CSV_DIR}/dnop_v2.csv"
 
 
 def main(argv: List[str]) -> None:

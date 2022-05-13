@@ -9,17 +9,18 @@ from dnop_dataset import ViewType, PATHOLOGIES, DATASET_NAME, COLOR_MODE, DNOPDa
 from dnop import SAVE_DIR, get_model, most_recent_save
 
 
-CSV_DIR: str = "./out/csv"
+MODEL_NAME: str = "dnop_v2"
+CSV_DIR: str = "./out/csv/dnop_v2"
 DATASET_PATH: str = f"/groups/CS156b/2022/team_dirs/docbot/{DATASET_NAME}"
 TEST_ID_PATH: str = "/groups/CS156b/data/student_labels/test_ids.csv"
 ID_COL: str = "Id"
 
 
 def get_csv_filepath(pi: int) -> str:
-    return f"{CSV_DIR}/dnop_v1_p{pi:02d}.csv"
+    return f"{CSV_DIR}/{MODEL_NAME}_p{pi:02d}.csv"
 
 def one_hot_to_label(vec: torch.Tensor) -> float:
-    # -1 * vec[0] + 0 * vec[1] + 1 * vec[2]
+    # weighted average: -1 * vec[0] + 0 * vec[1] + 1 * vec[2]
     return float(vec[2] - vec[0])
 
 def usage(argv: List[str]) -> None:

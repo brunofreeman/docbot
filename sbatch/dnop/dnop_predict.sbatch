@@ -17,7 +17,7 @@
 UNAME=bfreeman
 
 cd /home/"${UNAME}"/docbot
-mkdir out
+mkdir out &> /dev/null
 source /groups/CS156b/2022/venvs/docbotvenv/bin/activate
 python3 src/dnop/dnop_predict.py $1
 deactivate
