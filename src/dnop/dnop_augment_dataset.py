@@ -68,7 +68,7 @@ class DNOPDataset(Dataset):
     # normalization an augmentation used for CheXnet
     NORMALIZATION = torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     AUGMENT = torchvision.transforms.RandomAffine(ROTATION_RANGE, translate=TRANSLATE_RANGE, scale=ZOOM_RANGE, shear=None, interpolation=<InterpolationMode.NEAREST: 'nearest'>, fill=0, fillcolor=None, resample=None)
-    FULL_TRANSFORM = transforms = torch.nn.Sequential(NORMALIZATION, AUGMENT)
+    FULL_TRANSFORM = torch.nn.Sequential(NORMALIZATION, AUGMENT)
 
     view_type: ViewType
     pathology_i: int
