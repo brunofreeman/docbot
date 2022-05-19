@@ -1,10 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=docbot_resnet_test_predict_7
-#SBATCH --output=/home/%u/docbot/out/%x_%j_%u.out
+#SBATCH --job-name=docbot_rnop
+
+#SBATCH --output=/home/%u/docbot/out/rnop/out/%j_%x.out
 
 #SBATCH -A CS156b
-#SBATCH -t 1:00:00
+#SBATCH -t 72:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=16G
@@ -18,5 +19,5 @@ UNAME=mbatchev
 
 cd /home/"${UNAME}"/docbot
 source /groups/CS156b/2022/venvs/docbotvenv/bin/activate
-python3 src/resnet/resnet_test_predict.py
+python3 src/rnop/rnop.py $1 $2
 deactivate

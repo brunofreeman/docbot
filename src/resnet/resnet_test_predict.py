@@ -8,8 +8,8 @@ import cv2
 import pandas as pd
 from torchvision import transforms
 
-MODEL_PATH: str = "./out/resnet_v1_002.pt"
-PREDICITON_CSV_PATH: str = "./out/resnet_v1_002.csv"
+MODEL_PATH: str = "./out/resnet_v1_007.pt"
+PREDICITON_CSV_PATH: str = "./out/resnet_v1_007.csv"
 
 OUT_DIM: int = 14
 
