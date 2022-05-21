@@ -11,7 +11,7 @@ from dnop_dataset import DNOPDataset, PATHOLOGIES, ViewType
 
 
 BATCH_SIZE: int = 16
-N_EPOCHS: int = 32
+N_EPOCHS: int = 512
 
 D_LOSS_THRESHOLD: float = 0.0001
 N_CONSEC_DL_VIOLATIONS: int = 3
