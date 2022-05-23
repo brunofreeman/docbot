@@ -1,0 +1,14 @@
+sbatch ./sbatch/adnop/adnop_predict.sbatch 0
+sbatch ./sbatch/adnop/adnop_predict.sbatch 1
+sbatch ./sbatch/adnop/adnop_predict.sbatch 2
+sbatch ./sbatch/adnop/adnop_predict.sbatch 3
+sbatch ./sbatch/adnop/adnop_predict.sbatch 4
+sbatch ./sbatch/adnop/adnop_predict.sbatch 5
+sbatch ./sbatch/adnop/adnop_predict.sbatch 6
+sbatch ./sbatch/adnop/adnop_predict.sbatch 7
+sbatch ./sbatch/adnop/adnop_predict.sbatch 8
+sbatch ./sbatch/adnop/adnop_predict.sbatch 9
+sbatch ./sbatch/adnop/adnop_predict.sbatch 10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 11
+sbatch ./sbatch/adnop/adnop_predict.sbatch 12
+sbatch ./sbatch/adnop/adnop_predict.sbatch 13
