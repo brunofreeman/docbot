@@ -55,7 +55,7 @@ PATHOLOGIES: List[str] = [
 ]
 
 
-class XCeptionTrainingDataset(Dataset):
+class CheXpertTrainingDataset(Dataset):
     len: int
     labels: pd.DataFrame
 
@@ -116,7 +116,7 @@ class XCeptionTrainingDataset(Dataset):
 
 
 def main(argv: List[str]) -> None:
-    dataset = XCeptionTrainingDataset()
+    dataset = CheXpertTrainingDataset()
     print(len(dataset))
     print(dataset[0])
 
