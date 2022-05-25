@@ -37,7 +37,7 @@ def main(argv: List[str]) -> None:
 
     for epoch_idx in range(N_EPOCHS):
 
-        f = open("./out/resnet_test_live_smaller.txt", "a")
+        f = open("./out/xception_test_live_smaller.txt", "a")
         title: str = f"Epoch {epoch_idx+1:03d}/{N_EPOCHS}:"
         print(f"{title}\n{'-' * len(title)}")
         f.write(f"{title}\n{'-' * len(title)}\n")
@@ -70,8 +70,8 @@ def main(argv: List[str]) -> None:
         # update loss and training accuracy
         training_loss /= len(data_loader)
 
-        save_path: str = f"./out/resnet_v1_smaller_{(epoch_idx + 1):03d}.pt"
-        f = open("./out/resnet_test_live_smaller.txt", "a")
+        save_path: str = f"./out/xception_v1_smaller_{(epoch_idx + 1):03d}.pt"
+        f = open("./out/xception_test_live_smaller.txt", "a")
         f.write(f"loss: {training_loss:0.4f}\n")
         f.close()
         print(f"loss: {training_loss:0.4f}")
