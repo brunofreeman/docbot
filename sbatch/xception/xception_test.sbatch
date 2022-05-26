@@ -44,5 +44,5 @@ UNAME=nmcalist
 cd /home/"${UNAME}"/docbot
 mkdir out
 source /groups/CS156b/2022/venvs/docbotvenv/bin/activate
-python3 src/docbot_train.py
+python3 src/xception/xception_test.py
 deactivate
