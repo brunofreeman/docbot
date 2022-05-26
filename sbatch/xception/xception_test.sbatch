@@ -38,7 +38,7 @@
 #SBATCH --mail-type=FAIL
 
 # rest of file is standard bash
-UNAME=nmcalist
+UNAME=nmcalister01
 
 # setup a Python environment and run a script (for example)
 cd /home/"${UNAME}"/docbot
