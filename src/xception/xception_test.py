@@ -8,7 +8,7 @@ import torch.optim as optim
 import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchsummary import summary
-from dataset_resnet import CheXpertTrainingDataset
+from xception_dataset import CheXpertTrainingDataset
 
 BATCH_SIZE: int = 16
 N_EPOCHS: int = 128
