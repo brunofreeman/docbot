@@ -11,16 +11,16 @@ from adnop_dataset import ADNOPDataset, PATHOLOGIES, ViewType
 
 
 BATCH_SIZE: int = 16
-N_EPOCHS: int = 5
+N_EPOCHS: int = 10
 
 D_LOSS_THRESHOLD: float = 0.0001
-N_CONSEC_DL_VIOLATIONS: int = 3
+N_CONSEC_DL_VIOLATIONS: int = -1
 
 IN_DIM: Tuple[int, int, int] = (3, 256, 256)
 OUT_DIM: int = 3
 
 SAVE_DIR: str = "./out/adnop"
-SAVE_PATTERN: str = r"dnop_(frontal|lateral)_p[0-9]{2}_e[0-9]{3}.pt"
+SAVE_PATTERN: str = r"adnop_(frontal|lateral)_p[0-9]{2}_e[0-9]{3}.pt"
 
 
 def get_save_filename(view_type: ViewType, pi: int, ei: int) -> str:
