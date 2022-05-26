@@ -8,7 +8,7 @@ import torch.optim as optim
 import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchsummary import summary
-from dataset_resnet import CheXpertTrainingDataset
+from xception_dataset import CheXpertTrainingDataset
 
 BATCH_SIZE: int = 16
 N_EPOCHS: int = 128
@@ -28,7 +28,7 @@ def main(argv: List[str]) -> None:
 
     # model comes from timm; it has a nice feature where we can use num_classes to
     # adjust model.fc on our own
-    model = timm.create_model('xception', pretrained=True, num_classes = OUT_DIM)
+    model = timm.create_model('xception', pretrained=False, num_classes = OUT_DIM)
 
     model = model.to(device)
     print(model)
