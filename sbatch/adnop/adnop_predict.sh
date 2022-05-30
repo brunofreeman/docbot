@@ -1,14 +1,86 @@
-sbatch ./sbatch/adnop/adnop_predict.sbatch 0
-sbatch ./sbatch/adnop/adnop_predict.sbatch 1
-sbatch ./sbatch/adnop/adnop_predict.sbatch 2
-sbatch ./sbatch/adnop/adnop_predict.sbatch 3
-sbatch ./sbatch/adnop/adnop_predict.sbatch 4
-sbatch ./sbatch/adnop/adnop_predict.sbatch 5
-sbatch ./sbatch/adnop/adnop_predict.sbatch 6
-sbatch ./sbatch/adnop/adnop_predict.sbatch 7
-sbatch ./sbatch/adnop/adnop_predict.sbatch 8
-sbatch ./sbatch/adnop/adnop_predict.sbatch 9
-sbatch ./sbatch/adnop/adnop_predict.sbatch 10
-sbatch ./sbatch/adnop/adnop_predict.sbatch 11
-sbatch ./sbatch/adnop/adnop_predict.sbatch 12
-sbatch ./sbatch/adnop/adnop_predict.sbatch 13
+sbatch ./sbatch/adnop/adnop_predict.sbatch 0 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 1 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 2 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 3 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 4 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 5 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 6 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 7 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 8 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 9 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 10 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 11 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 12 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 13 -e e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 0 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 1 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 2 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 3 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 4 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 5 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 6 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 7 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 8 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 9 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 10 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 11 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 12 -s e05
+sbatch ./sbatch/adnop/adnop_predict.sbatch 13 -s e05
+
+sbatch ./sbatch/adnop/adnop_predict.sbatch 0 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 1 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 2 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 3 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 4 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 5 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 6 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 7 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 8 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 9 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 10 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 11 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 12 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 13 -e e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 0 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 1 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 2 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 3 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 4 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 5 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 6 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 7 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 8 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 9 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 10 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 11 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 12 -s e10
+sbatch ./sbatch/adnop/adnop_predict.sbatch 13 -s e10
+
+sbatch ./sbatch/adnop/adnop_predict.sbatch 0 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 1 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 2 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 3 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 4 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 5 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 6 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 7 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 8 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 9 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 10 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 11 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 12 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 13 -e e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 0 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 1 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 2 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 3 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 4 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 5 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 6 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 7 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 8 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 9 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 10 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 11 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 12 -s e15
+sbatch ./sbatch/adnop/adnop_predict.sbatch 13 -s e15

@@ -11,7 +11,7 @@ from adnop_dataset import ADNOPDataset, PATHOLOGIES, ViewType
 
 
 BATCH_SIZE: int = 16
-N_EPOCHS: int = 10
+N_EPOCHS: int = 20
 
 D_LOSS_THRESHOLD: float = 0.0001
 N_CONSEC_DL_VIOLATIONS: int = -1
@@ -82,10 +82,10 @@ def parse_args(argv: List[str]) -> Tuple[ViewType, int]:
     return view_type, pi
 
 
-def most_recent_save(view_type: ViewType, pi: int) -> Optional[str]:
+def most_recent_save(view_type: ViewType, pi: int, dir: str = SAVE_DIR) -> Optional[str]:
     ei: int = 0
     filename = None
-    for pt_file in os.listdir(SAVE_DIR):
+    for pt_file in os.listdir(dir):
         if is_save_filename(pt_file):
             v, p, e = extract_params(pt_file)
             if v == view_type and p == pi and ei < e:
