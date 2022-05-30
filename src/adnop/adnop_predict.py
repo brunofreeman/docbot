@@ -19,9 +19,11 @@ ID_COL: str = "Id"
 def get_csv_filepath(pi: int, set: str, snapshot: str) -> str:
     return f"{CSV_DIR}/{MODEL_NAME}_{set}_{snapshot}_p{pi:02d}.csv"
 
+
 def one_hot_to_label(vec: torch.Tensor) -> float:
     # weighted average: -1 * vec[0] + 0 * vec[1] + 1 * vec[2]
     return float(vec[2] - vec[0])
+
 
 def usage(argv: List[str]) -> None:
     print(f"usage: {argv[0]} <i \u2208 [0, 13]> -{{e, s}} <snapshot dir>", flush=True)
