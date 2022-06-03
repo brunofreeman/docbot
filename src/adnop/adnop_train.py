@@ -11,7 +11,7 @@ from adnop_dataset import ADNOPDataset, PATHOLOGIES, ViewType
 
 
 BATCH_SIZE: int = 16
-N_EPOCHS: int = 20
+N_EPOCHS: int = 30
 
 D_LOSS_THRESHOLD: float = 0.0001
 N_CONSEC_DL_VIOLATIONS: int = -1
